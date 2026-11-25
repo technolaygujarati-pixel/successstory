@@ -1,0 +1,1997 @@
+<!DOCTYPE html>
+<html lang="gu">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SuccessStory | ગુજરાત પોલીસ કોન્સ્ટેબલ (200 Q) અને તલાટી (100 Q) OMR પ્રેક્ટિસ</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts: Noto Sans Gujarati & Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Noto+Sans+Gujarati:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Noto Sans Gujarati"', 'Inter', 'sans-serif'],
+          },
+          colors: {
+            policeNavy: '#0F172A',
+            policeBlue: '#1E3A8A',
+            policeGold: '#D97706',
+            omrPaper: '#FDFBF7',
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body {
+      font-family: 'Noto Sans Gujarati', 'Inter', sans-serif;
+      background-color: #F1F5F9;
+    }
+
+    /* Realistic OMR Bubble Styling */
+    .omr-bubble {
+      width: 28px;
+      height: 28px;
+      border-radius: 9999px;
+      border: 1.8px solid #DC2626;
+      color: #DC2626;
+      font-size: 11px;
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.16s cubic-bezier(0.4, 0, 0.2, 1);
+      user-select: none;
+      background-color: #FFFFFF;
+    }
+    .omr-bubble:hover {
+      background-color: #FEE2E2;
+      transform: scale(1.08);
+    }
+    .omr-bubble.filled {
+      background-color: #0F172A !important;
+      border-color: #0F172A !important;
+      color: #FFFFFF !important;
+      box-shadow: inset 0 0 0 2px #0F172A, 0 2px 4px rgba(15, 23, 42, 0.35);
+      transform: scale(1.05);
+    }
+    .omr-bubble.option-e {
+      border-color: #475569;
+      color: #475569;
+    }
+    .omr-bubble.option-e.filled {
+      background-color: #334155 !important;
+      border-color: #334155 !important;
+      color: #FFFFFF !important;
+    }
+
+    /* Custom Scrollbar for OMR Sheet */
+    .omr-scroll::-webkit-scrollbar {
+      width: 6px;
+    }
+    .omr-scroll::-webkit-scrollbar-track {
+      background: #F1F5F9;
+      border-radius: 8px;
+    }
+    .omr-scroll::-webkit-scrollbar-thumb {
+      background: #94A3B8;
+      border-radius: 8px;
+    }
+    .omr-scroll::-webkit-scrollbar-thumb:hover {
+      background: #64748B;
+    }
+  </style>
+</head>
+<body class="text-slate-800 antialiased min-h-screen flex flex-col">
+
+  <!-- Toast Notification Container -->
+  <div id="toast-container" class="fixed top-20 right-4 z-50 flex flex-col gap-2 max-w-sm w-full pointer-events-none"></div>
+
+  <!-- Top Navigation Bar -->
+  <header class="bg-policeNavy text-white shadow-lg sticky top-0 z-40 border-b-2 border-amber-500">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2.5 flex items-center justify-between gap-2">
+      <!-- Brand Logo & Tagline -->
+      <div class="flex items-center gap-3 cursor-pointer" onclick="app.navigate('dashboard')">
+        <div class="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center text-slate-950 font-extrabold text-xl shadow-md shrink-0">
+          <i class="fa-solid fa-shield-halved"></i>
+        </div>
+        <div>
+          <div class="flex flex-wrap items-center gap-2">
+            <span class="font-extrabold text-xl sm:text-2xl tracking-tight text-white">Success<span class="text-amber-400">Story</span></span>
+            <span id="cloud-sync-badge" class="inline-flex items-center gap-1.5 text-[11px] bg-slate-800 text-amber-300 border border-slate-700 px-2.5 py-0.5 rounded-full font-bold">
+              <span id="cloud-sync-dot" class="w-2 h-2 rounded-full bg-amber-400"></span>
+              <span id="cloud-sync-text">Syncing...</span>
+            </span>
+            <button type="button" onclick="event.stopPropagation(); app.manualSync();" title="Firestore સાથે તરત Sync કરો" class="inline-flex items-center gap-1 text-[11px] bg-blue-900 hover:bg-blue-800 text-white border border-blue-700 px-2 py-0.5 rounded-full font-bold transition">
+              <i id="sync-btn-icon" class="fa-solid fa-rotate"></i> Sync
+            </button>
+          </div>
+          <p class="text-[11px] sm:text-xs text-amber-300 font-bold leading-tight mt-0.5">
+            "પ્રેક્ટિસ એવી કરીએ, જે છેક સક્સેસ સુધી લઈ જાય"
+          </p>
+        </div>
+      </div>
+
+      <!-- Desktop Navigation -->
+      <nav class="hidden md:flex items-center gap-2">
+        <button onclick="app.navigate('dashboard')" id="nav-dashboard" class="nav-btn px-3.5 py-2 rounded-lg text-sm font-semibold bg-blue-900/80 text-amber-300 transition">
+          <i class="fa-solid fa-house mr-1.5"></i>હોમ / વિષયો
+        </button>
+        <button onclick="app.startFullExam()" class="px-3.5 py-2 rounded-lg text-sm font-semibold hover:bg-slate-800 text-slate-200 transition">
+          <i class="fa-solid fa-file-pen mr-1.5 text-amber-400"></i>પૂરેપૂરું પેપર
+        </button>
+        <button onclick="app.navigate('leaderboard')" id="nav-leaderboard" class="nav-btn px-3.5 py-2 rounded-lg text-sm font-semibold hover:bg-slate-800 text-slate-200 transition">
+          <i class="fa-solid fa-trophy mr-1.5 text-amber-400"></i>લાઇવ રેન્કિંગ
+        </button>
+        <button onclick="app.openAddQuestionModal()" class="px-3.5 py-2 rounded-lg text-sm font-semibold bg-amber-600 hover:bg-amber-500 text-white shadow transition">
+          <i class="fa-solid fa-wand-magic-sparkles mr-1.5"></i>નવા પ્રશ્નો (Auto & Daily)
+        </button>
+      </nav>
+
+      <!-- User Profile Button -->
+      <div class="flex items-center gap-2 shrink-0">
+        <button onclick="app.openProfileModal()" class="flex items-center gap-2 bg-slate-800 hover:bg-slate-700 border border-slate-700 px-3 py-1.5 rounded-full text-xs sm:text-sm transition">
+          <span class="w-6 h-6 rounded-full bg-amber-500 text-slate-950 font-bold flex items-center justify-center text-xs" id="user-avatar-initial">U</span>
+          <span id="header-user-name" class="font-semibold max-w-[90px] sm:max-w-[120px] truncate">વિદ્યાર્થી</span>
+          <i class="fa-solid fa-pen text-[10px] text-amber-400"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- Mobile Navigation Bar -->
+    <div class="md:hidden bg-slate-900 border-t border-slate-800 px-2 py-1.5 flex justify-around text-xs">
+      <button onclick="app.navigate('dashboard')" class="px-2 py-1.5 rounded-lg text-amber-300 font-semibold">
+        <i class="fa-solid fa-house mr-1"></i>વિષયો
+      </button>
+      <button onclick="app.startFullExam()" class="px-2 py-1.5 rounded-lg text-white font-semibold">
+        <i class="fa-solid fa-file-pen mr-1 text-amber-400"></i>ફુલ પેપર
+      </button>
+      <button onclick="app.navigate('leaderboard')" class="px-2 py-1.5 rounded-lg text-white font-semibold">
+        <i class="fa-solid fa-trophy mr-1 text-amber-400"></i>રેન્કિંગ
+      </button>
+      <button onclick="app.openAddQuestionModal()" class="px-2 py-1.5 rounded-lg bg-amber-600 text-white font-semibold">
+        <i class="fa-solid fa-wand-magic-sparkles mr-1"></i>Auto/ઉમેરો
+      </button>
+    </div>
+  </header>
+
+  <!-- Main Workspace -->
+  <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+
+    <!-- ==================== VIEW 1: DASHBOARD ==================== -->
+    <section id="view-dashboard" class="space-y-6">
+
+      <!-- Exam Category Switcher (Constable 200 Q vs Talati-cum-Mantri 100 Q) -->
+      <div class="bg-white rounded-2xl p-3 sm:p-4 shadow-sm border border-slate-200 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
+        <div class="flex items-center gap-2.5 px-1">
+          <div class="w-9 h-9 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center text-base font-bold shrink-0">
+            <i class="fa-solid fa-compass"></i>
+          </div>
+          <div>
+            <p class="text-xs font-extrabold text-slate-900">પરીક્ષા પસંદ કરો (Exam Pattern):</p>
+            <p class="text-[11px] text-slate-500">કોન્સ્ટેબલ (200 પ્રશ્નો / 3 કલાક) અથવા તલાટી કમ મંત્રી (100 પ્રશ્નો / 1 કલાક)</p>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-2 bg-slate-100 p-1.5 rounded-xl border border-slate-200">
+          <button id="btn-cat-constable" onclick="app.switchExamCategory('CONSTABLE')" class="px-3.5 py-2.5 rounded-lg text-xs sm:text-sm font-extrabold transition flex items-center justify-center gap-2 bg-policeNavy text-amber-400 shadow">
+            <i class="fa-solid fa-user-shield"></i>
+            <span>પોલીસ કોન્સ્ટેબલ (200 Q)</span>
+          </button>
+          <button id="btn-cat-talati" onclick="app.switchExamCategory('TALATI')" class="px-3.5 py-2.5 rounded-lg text-xs sm:text-sm font-extrabold transition flex items-center justify-center gap-2 text-slate-700 hover:bg-white/70">
+            <i class="fa-solid fa-file-signature"></i>
+            <span>તલાટી કમ મંત્રી (100 Q)</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Hero Banner -->
+      <div class="bg-gradient-to-r from-policeNavy via-blue-950 to-policeBlue rounded-2xl p-6 sm:p-8 text-white shadow-xl relative overflow-hidden border border-blue-800/60">
+        <div class="relative z-10 max-w-3xl">
+          <div id="hero-pattern-badge" class="inline-flex items-center gap-2 bg-amber-500/20 border border-amber-400/40 text-amber-300 px-3 py-1 rounded-full text-xs font-bold mb-3">
+            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+            ગુજરાત પોલીસ કોન્સ્ટેબલ (LRD) • 200 પ્રશ્નો • 200 ગુણ • 3 કલાક
+          </div>
+          <h1 id="hero-title" class="text-2xl sm:text-3xl font-extrabold leading-snug">
+            પૂરેપૂરું <span class="text-amber-400">200 પ્રશ્નોનું કોન્સ્ટેબલ પેપર</span> અસલી OMR શીટ પર આપો!
+          </h1>
+          <p id="hero-desc" class="text-slate-200 text-sm sm:text-base mt-2.5 leading-relaxed">
+            Part A (80 ગુણ) અને Part B (120 ગુણ) મુજબ સંપૂર્ણ 200 પ્રશ્નો, વિકલ્પ <strong>(E)</strong>, <strong>-0.25 નેગેટિવ માર્કિંગ</strong> અને ટેસ્ટ પૂરો થયે દરેક પ્રશ્નની <strong>ઊંડી સ્ટેપ-બાય-સ્ટેપ સમજૂતી</strong>.
+          </p>
+          <div class="mt-5 flex flex-wrap gap-3">
+            <button id="btn-hero-full-mock" onclick="app.startFullExam()" class="px-5 py-3.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-extrabold text-sm sm:text-base shadow-lg transition flex items-center gap-2">
+              <i class="fa-solid fa-play"></i> <span id="hero-full-btn-text">પૂરેપૂરું 200 પ્રશ્નોનું કોન્સ્ટેબલ પેપર શરૂ કરો</span>
+            </button>
+            <button onclick="app.openAddQuestionModal()" class="px-5 py-3.5 rounded-xl bg-white/10 hover:bg-white/20 border border-white/25 text-white font-bold text-sm sm:text-base transition flex items-center gap-2">
+              <i class="fa-solid fa-calendar-day text-amber-400"></i> તારીખ મુજબ Auto Current Affairs
+            </button>
+          </div>
+        </div>
+        <div class="hidden lg:flex flex-col items-center justify-center absolute right-8 top-1/2 -translate-y-1/2 bg-white/5 border border-white/10 rounded-2xl p-5 backdrop-blur-sm text-center">
+          <span class="text-xs text-amber-300 font-bold uppercase tracking-wider">સંપૂર્ણ પેપર મોડ</span>
+          <span id="hero-q-big-num" class="text-4xl font-extrabold text-white mt-1">200 Q</span>
+          <span id="hero-time-sub" class="text-xs text-slate-300 mt-1">180 મિનિટ • OMR શીટ</span>
+        </div>
+      </div>
+
+      <!-- Pattern Info Cards -->
+      <div id="pattern-info-cards" class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4"></div>
+
+      <!-- Subject-Wise OMR Practice Grid -->
+      <div>
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
+          <div>
+            <h2 class="text-xl font-extrabold text-slate-900">
+              <i class="fa-solid fa-book-open text-blue-800 mr-2"></i>વિષય મુજબ ઓનલાઇન OMR પ્રેક્ટિસ
+            </h2>
+            <p class="text-xs sm:text-sm text-slate-500">દરેક વિષયના અલગ ટેસ્ટ અથવા સંપૂર્ણ પેપર પસંદ કરો • કુલ ઉપલબ્ધ પ્રશ્નો: <strong id="total-bank-count" class="text-policeBlue">0</strong></p>
+          </div>
+          <div id="subjects-part-badges" class="flex items-center gap-2 text-xs font-semibold"></div>
+        </div>
+
+        <div id="subjects-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5"></div>
+      </div>
+
+      <!-- Community / Cloud Status Footer Box -->
+      <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+        <div class="flex items-start gap-3.5">
+          <div class="w-11 h-11 rounded-xl bg-indigo-100 text-indigo-800 flex items-center justify-center text-xl shrink-0">
+            <i class="fa-solid fa-cloud-arrow-up"></i>
+          </div>
+          <div>
+            <h3 class="font-bold text-slate-900 text-base">કમ્યુનિટી પ્રશ્ન બેંક અને લાઇવ લીડરબોર્ડ (Project: successstory-e364a)</h3>
+            <p class="text-xs sm:text-sm text-slate-600 mt-0.5">
+              યુઝર ID: <span id="display-user-uid" class="font-mono text-xs bg-slate-100 px-2 py-0.5 rounded text-slate-800 select-all">લોડ થઈ રહ્યું છે...</span> — તમે ઉમેરેલા નવા પ્રશ્નો અને ટેસ્ટ સ્કોર Cloud Firestore (`questions` & `leaderboard`) પર Sync થાય છે.
+            </p>
+          </div>
+        </div>
+        <div class="flex gap-2.5 shrink-0">
+          <button onclick="app.navigate('leaderboard')" class="px-4 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs sm:text-sm font-bold transition">
+            <i class="fa-solid fa-ranking-star mr-1.5 text-amber-400"></i>લાઇવ રેન્કિંગ જુઓ
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== VIEW 2: ACTIVE OMR EXAM INTERFACE ==================== -->
+    <section id="view-exam" class="hidden space-y-4">
+      <!-- Sticky Exam Status Bar -->
+      <div class="bg-white rounded-2xl p-4 shadow-md border border-slate-200 flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <span id="exam-part-badge" class="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-blue-100 text-blue-800">Part A</span>
+          <h2 id="exam-title" class="text-base sm:text-lg font-extrabold text-slate-900 mt-0.5">વિષય ટેસ્ટ</h2>
+        </div>
+
+        <div class="flex items-center gap-3">
+          <div class="bg-slate-900 text-white px-3.5 py-2 rounded-xl flex items-center gap-2 shadow-inner">
+            <i class="fa-regular fa-clock text-amber-400 animate-pulse"></i>
+            <span id="exam-timer" class="font-mono font-extrabold text-base sm:text-lg tracking-wider">00:00:00</span>
+          </div>
+          <button onclick="app.openSubmitConfirmModal()" class="px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-xs sm:text-sm shadow transition">
+            <i class="fa-solid fa-paper-plane mr-1.5"></i>ટેસ્ટ સબમિટ કરો
+          </button>
+        </div>
+      </div>
+
+      <!-- Section Jump Bar -->
+      <div id="exam-section-jump-bar" class="hidden bg-white rounded-xl p-2.5 shadow-sm border border-slate-200 flex items-center gap-2 overflow-x-auto">
+        <span class="text-xs font-extrabold text-slate-500 shrink-0 px-1"><i class="fa-solid fa-layer-group mr-1"></i>વિભાગ:</span>
+        <div id="exam-section-pills" class="flex items-center gap-1.5"></div>
+      </div>
+
+      <!-- Mobile Tab Toggle -->
+      <div class="lg:hidden grid grid-cols-2 gap-2 bg-slate-200 p-1 rounded-xl">
+        <button id="mobile-tab-q" onclick="app.switchMobileExamTab('question')" class="py-2 rounded-lg text-xs font-extrabold bg-white text-slate-900 shadow-sm">
+          <i class="fa-solid fa-file-lines mr-1"></i>પ્રશ્ન વાંચો (<span id="mob-q-num">1</span>)
+        </button>
+        <button id="mobile-tab-omr" onclick="app.switchMobileExamTab('omr')" class="py-2 rounded-lg text-xs font-extrabold text-slate-600">
+          <i class="fa-solid fa-table-cells mr-1"></i>OMR શીટ (<span id="mob-answered-count">0</span>/<span id="mob-total-count">0</span>)
+        </button>
+      </div>
+
+      <!-- Split Layout: Question Card + OMR Sheet -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
+        <!-- Question Card -->
+        <div id="exam-question-panel" class="lg:col-span-7 bg-white rounded-2xl shadow-md border border-slate-200 overflow-hidden flex flex-col">
+          <div class="bg-slate-50 px-5 py-3.5 border-b border-slate-200 flex flex-wrap items-center justify-between gap-2">
+            <div class="flex items-center gap-2">
+              <span class="bg-policeNavy text-white font-extrabold text-xs sm:text-sm px-3 py-1 rounded-lg">
+                પ્રશ્ન <span id="q-current-index">1</span> / <span id="q-total-count">200</span>
+              </span>
+              <span id="q-subject-tag" class="text-xs font-bold text-blue-800 bg-blue-50 border border-blue-200 px-2.5 py-1 rounded-lg">
+                વિષય
+              </span>
+            </div>
+            <div class="text-xs font-bold text-slate-500">
+              સાચા: <span class="text-emerald-600">+1</span> | ખોટા: <span class="text-rose-600">-0.25</span> | (E): <span class="text-slate-700">0</span>
+            </div>
+          </div>
+
+          <div class="p-5 sm:p-6 space-y-5">
+            <p id="q-text" class="text-base sm:text-lg font-bold text-slate-900 leading-relaxed whitespace-pre-line">
+              પ્રશ્ન લોડ થઈ રહ્યો છે...
+            </p>
+
+            <div id="q-options-container" class="space-y-3"></div>
+
+            <div id="instant-hint-box" class="hidden bg-amber-50 border border-amber-200 rounded-xl p-4 text-sm space-y-2">
+              <div class="font-extrabold text-amber-900 flex items-center gap-1.5">
+                <i class="fa-solid fa-lightbulb text-amber-600"></i> ઊંડી સમજૂતી અને સરળ રીત:
+              </div>
+              <p id="instant-explanation-text" class="text-slate-700 leading-relaxed whitespace-pre-line text-xs sm:text-sm"></p>
+            </div>
+          </div>
+
+          <div class="bg-slate-50 px-5 py-3.5 border-t border-slate-200 flex flex-wrap items-center justify-between gap-2">
+            <button onclick="app.prevQuestion()" id="btn-prev-q" class="px-4 py-2.5 rounded-xl bg-white border border-slate-300 hover:bg-slate-100 text-slate-800 font-bold text-xs sm:text-sm transition disabled:opacity-40">
+              <i class="fa-solid fa-arrow-left mr-1.5"></i>પાછળનો પ્રશ્ન
+            </button>
+
+            <button onclick="app.toggleInstantHint()" id="btn-instant-hint" class="px-3.5 py-2.5 rounded-xl bg-amber-100 hover:bg-amber-200 text-amber-900 font-bold text-xs sm:text-sm transition">
+              <i class="fa-solid fa-eye mr-1"></i>સમજૂતી જુઓ
+            </button>
+
+            <button onclick="app.nextQuestion()" id="btn-next-q" class="px-4 py-2.5 rounded-xl bg-policeBlue hover:bg-blue-800 text-white font-bold text-xs sm:text-sm transition">
+              આગળનો પ્રશ્ન<i class="fa-solid fa-arrow-right ml-1.5"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- OMR Answer Sheet -->
+        <div id="exam-omr-panel" class="hidden lg:block lg:col-span-5 bg-omrPaper rounded-2xl shadow-md border-2 border-red-200 overflow-hidden">
+          <div class="bg-red-700 text-white px-4 py-3 flex items-center justify-between">
+            <div>
+              <h3 class="font-extrabold text-sm sm:text-base tracking-wide flex items-center gap-2">
+                <i class="fa-solid fa-circle-dot"></i> OMR ઉત્તરવહી (ANSWER SHEET)
+              </h3>
+              <p class="text-[11px] text-red-100">ગોળ કુંડાળું ઘાટું કરો • ન આવડે તો (E) પસંદ કરો</p>
+            </div>
+            <span class="bg-white text-red-800 font-extrabold text-xs px-2.5 py-1 rounded-lg">
+              ભરેલા: <span id="omr-filled-count">0</span>/<span id="omr-total-count">0</span>
+            </span>
+          </div>
+
+          <div class="bg-red-50 px-4 py-2 border-b border-red-200 flex items-center justify-between text-[11px] font-bold text-slate-700">
+            <span class="flex items-center gap-1"><span class="w-3 h-3 rounded-full bg-slate-900 inline-block"></span> જવાબ આપેલ</span>
+            <span class="flex items-center gap-1"><span class="w-3 h-3 rounded-full bg-slate-600 inline-block"></span> (E) છોડેલ</span>
+            <span class="flex items-center gap-1"><span class="w-3 h-3 rounded-full border border-red-600 bg-white inline-block"></span> બાકી</span>
+          </div>
+
+          <div id="omr-grid-rows" class="p-3 sm:p-4 max-h-[540px] overflow-y-auto omr-scroll divide-y divide-red-100"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== VIEW 3: RESULT & STEP-BY-STEP SOLUTIONS ==================== -->
+    <section id="view-result" class="hidden space-y-6">
+      <div class="bg-white rounded-2xl shadow-lg border border-slate-200 overflow-hidden">
+        <div class="bg-gradient-to-r from-policeNavy to-policeBlue p-6 text-white flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <span class="text-xs font-bold uppercase tracking-wider text-amber-300">પરીક્ષા પરિણામ અને વિશ્લેષણ</span>
+            <h2 id="res-exam-title" class="text-2xl font-extrabold mt-1">મોક ટેસ્ટ પરિણામ</h2>
+            <p id="res-user-info" class="text-xs sm:text-sm text-slate-300 mt-1">વિદ્યાર્થી: —</p>
+          </div>
+          <div class="flex gap-3">
+            <button onclick="app.navigate('dashboard')" class="px-4 py-2.5 rounded-xl bg-white/15 hover:bg-white/25 text-white font-bold text-xs sm:text-sm transition">
+              <i class="fa-solid fa-house mr-1.5"></i>હોમ પર જાઓ
+            </button>
+            <button onclick="app.navigate('leaderboard')" class="px-4 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-extrabold text-xs sm:text-sm transition">
+              <i class="fa-solid fa-trophy mr-1.5"></i>લાઇવ રેન્કિંગ
+            </button>
+          </div>
+        </div>
+
+        <div class="p-6 grid grid-cols-2 sm:grid-cols-4 gap-4 border-b border-slate-200">
+          <div class="bg-blue-50 border border-blue-200 rounded-xl p-4 text-center">
+            <p class="text-xs font-bold text-blue-800">કુલ મેળવેલ ગુણ</p>
+            <p id="res-net-score" class="text-3xl font-extrabold text-blue-950 mt-1">0.00</p>
+            <p id="res-max-score" class="text-xs text-slate-500 mt-0.5">કુલ 0 માંથી</p>
+          </div>
+          <div class="bg-emerald-50 border border-emerald-200 rounded-xl p-4 text-center">
+            <p class="text-xs font-bold text-emerald-800">સાચા જવાબ (+1)</p>
+            <p id="res-correct-count" class="text-3xl font-extrabold text-emerald-700 mt-1">0</p>
+            <p id="res-accuracy" class="text-xs text-emerald-700 mt-0.5">ચોકસાઈ: 0%</p>
+          </div>
+          <div class="bg-rose-50 border border-rose-200 rounded-xl p-4 text-center">
+            <p class="text-xs font-bold text-rose-800">ખોટા જવાબ (-0.25)</p>
+            <p id="res-wrong-count" class="text-3xl font-extrabold text-rose-700 mt-1">0</p>
+            <p id="res-negative-marks" class="text-xs text-rose-700 mt-0.5">કપાયેલ ગુણ: -0.00</p>
+          </div>
+          <div class="bg-slate-100 border border-slate-300 rounded-xl p-4 text-center">
+            <p class="text-xs font-bold text-slate-700">વિકલ્પ (E) / છોડેલ</p>
+            <p id="res-skipped-count" class="text-3xl font-extrabold text-slate-800 mt-1">0</p>
+            <p class="text-xs text-slate-500 mt-0.5">0 ગુણ કપાયા</p>
+          </div>
+        </div>
+
+        <div id="res-parts-breakdown" class="p-6 bg-slate-50 grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+      </div>
+
+      <div class="space-y-4">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+          <h3 class="text-xl font-extrabold text-slate-900">
+            <i class="fa-solid fa-book-open-reader text-amber-600 mr-2"></i>દરેક પ્રશ્નનું ઊંડું સ્ટેપ-બાય-સ્ટેપ સોલ્યુશન
+          </h3>
+          <div class="flex flex-wrap gap-2 text-xs">
+            <button onclick="app.filterReview('ALL')" class="px-3 py-1.5 rounded-lg bg-slate-900 text-white font-bold">બધા પ્રશ્નો</button>
+            <button onclick="app.filterReview('WRONG')" class="px-3 py-1.5 rounded-lg bg-rose-100 text-rose-800 font-bold">માત્ર ખોટા</button>
+            <button onclick="app.filterReview('CORRECT')" class="px-3 py-1.5 rounded-lg bg-emerald-100 text-emerald-800 font-bold">માત્ર સાચા</button>
+          </div>
+        </div>
+
+        <div id="res-solutions-list" class="space-y-4"></div>
+      </div>
+    </section>
+
+    <!-- ==================== VIEW 4: LIVE LEADERBOARD ==================== -->
+    <section id="view-leaderboard" class="hidden space-y-6">
+      <div class="bg-white rounded-2xl shadow-md border border-slate-200 overflow-hidden">
+        <div class="bg-policeNavy text-white p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div>
+            <h2 class="text-xl sm:text-2xl font-extrabold flex items-center gap-2">
+              <i class="fa-solid fa-trophy text-amber-400"></i> SuccessStory લાઇવ ટોપ સ્કોરર્સ (Leaderboard)
+            </h2>
+            <p class="text-xs sm:text-sm text-slate-300 mt-1">કોન્સ્ટેબલ (200 ગુણ) અને તલાટી (100 ગુણ) ના રીયલ-ટાઇમ સ્કોર્સ</p>
+          </div>
+          <div class="flex gap-2">
+            <button onclick="app.setLeaderboardFilter('ALL')" id="lb-tab-all" class="px-3 py-2 rounded-xl bg-amber-500 text-slate-950 font-extrabold text-xs">બધા</button>
+            <button onclick="app.setLeaderboardFilter('CONSTABLE')" id="lb-tab-const" class="px-3 py-2 rounded-xl bg-slate-800 text-white font-bold text-xs">કોન્સ્ટેબલ (200)</button>
+            <button onclick="app.setLeaderboardFilter('TALATI')" id="lb-tab-talati" class="px-3 py-2 rounded-xl bg-slate-800 text-white font-bold text-xs">તલાટી (100)</button>
+          </div>
+        </div>
+
+        <div class="overflow-x-auto">
+          <table class="w-full text-left border-collapse">
+            <thead>
+              <tr class="bg-slate-100 border-b border-slate-200 text-xs font-extrabold text-slate-700 uppercase">
+                <th class="py-3.5 px-4">રેન્ક</th>
+                <th class="py-3.5 px-4">વિદ્યાર્થીનું નામ</th>
+                <th class="py-3.5 px-4">પરીક્ષા / પેપર</th>
+                <th class="py-3.5 px-4 text-center">ચોકસાઈ / સાચા-ખોટા</th>
+                <th class="py-3.5 px-4 text-right">કુલ ગુણ & સમય</th>
+              </tr>
+            </thead>
+            <tbody id="leaderboard-tbody" class="divide-y divide-slate-200 text-sm">
+              <tr>
+                <td colspan="5" class="py-8 text-center text-slate-500">લાઇવ સ્કોર લોડ થઈ રહ્યા છે...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ==================== MODAL 1: ADD / AUTO GENERATE QUESTIONS ==================== -->
+  <div id="modal-add-question" class="hidden fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl border border-slate-200">
+      <div class="bg-policeNavy text-white px-6 py-4 flex items-center justify-between sticky top-0 z-10">
+        <h3 class="font-extrabold text-lg"><i class="fa-solid fa-wand-magic-sparkles text-amber-400 mr-2"></i>નવા પ્રશ્નો ઉમેરો (Auto & Daily)</h3>
+        <button onclick="app.closeModal('modal-add-question')" class="text-slate-300 hover:text-white text-xl"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+
+      <div class="p-6 space-y-6">
+        <!-- Auto Current Affairs & Bulk Question Generator Box -->
+        <div class="bg-gradient-to-br from-amber-50 to-blue-50 border border-amber-300 rounded-2xl p-4 sm:p-5 space-y-4">
+          <div class="flex items-start justify-between gap-2">
+            <div>
+              <span class="text-[11px] font-extrabold uppercase tracking-wider bg-amber-500 text-slate-950 px-2.5 py-0.5 rounded-full">Auto Generator</span>
+              <h4 class="font-extrabold text-slate-900 text-base mt-1">તારીખ મુજબ Auto Current Affairs અને દૈનિક પ્રશ્નો બનાવો</h4>
+              <p class="text-xs text-slate-600 mt-0.5">તારીખ પસંદ કરીને એક ક્લિકમાં કરંટ અફેર્સ અથવા વિષયવાર નવા પ્રશ્નો બનાવો અને Cloud પર Sync કરો.</p>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label class="block text-xs font-extrabold text-slate-700 mb-1">તારીખ પસંદ કરો (Current Affairs Date)</label>
+              <input type="date" id="auto-ca-date" class="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm font-semibold" />
+            </div>
+            <div>
+              <label class="block text-xs font-extrabold text-slate-700 mb-1">પ્રશ્નોની સંખ્યા (Bulk Count)</label>
+              <select id="auto-bulk-count" class="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm font-semibold">
+                <option value="5">5 નવા પ્રશ્નો</option>
+                <option value="10" selected>10 નવા પ્રશ્નો</option>
+                <option value="20">20 નવા પ્રશ્નો</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="flex flex-wrap gap-2.5 pt-1">
+            <button type="button" onclick="app.generateDateCurrentAffairs()" class="flex-1 min-w-[200px] py-2.5 px-4 rounded-xl bg-policeBlue hover:bg-blue-800 text-white font-extrabold text-xs sm:text-sm shadow transition flex items-center justify-center gap-2">
+              <i class="fa-solid fa-newspaper"></i> તારીખ મુજબ Auto Current Affairs બનાવો
+            </button>
+            <button type="button" onclick="app.generateBulkSubjectQuestions()" class="flex-1 min-w-[200px] py-2.5 px-4 rounded-xl bg-amber-600 hover:bg-amber-500 text-white font-extrabold text-xs sm:text-sm shadow transition flex items-center justify-center gap-2">
+              <i class="fa-solid fa-layer-plus"></i> પસંદ કરેલ વિષયના Bulk પ્રશ્નો ઉમેરો
+            </button>
+          </div>
+        </div>
+
+        <!-- Manual Single Question Form -->
+        <form id="form-add-question" onsubmit="app.handleSaveNewQuestion(event)" class="space-y-4 border-t border-slate-200 pt-5">
+          <h4 class="font-extrabold text-slate-900 text-base"><i class="fa-solid fa-pen-to-square text-policeBlue mr-1.5"></i>અથવા જાતે નવો પ્રશ્ન લખીને ઉમેરો</h4>
+
+          <div>
+            <label class="block text-xs font-extrabold text-slate-700 mb-1">વિષય પસંદ કરો *</label>
+            <select id="new-q-subject" required class="w-full rounded-xl border border-slate-300 px-3.5 py-2.5 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-blue-600">
+              <option value="gk_science">કરંટ અફેર્સ, વિજ્ઞાન અને સામાન્ય જ્ઞાન (GK & Current Affairs)</option>
+              <option value="reasoning">રીઝનિંગ અને ડેટા ઇન્ટરપ્રિટેશન (Reasoning)</option>
+              <option value="maths">ગણિત (Quantitative Aptitude / Maths)</option>
+              <option value="gujarati">ગુજરાતી ભાષા અને વ્યાકરણ (Gujarati)</option>
+              <option value="english">અંગ્રેજી વ્યાકરણ (English Grammar - તલાટી)</option>
+              <option value="constitution">ભારતનું બંધારણ અને પંચાયતી રાજ</option>
+              <option value="history_geo">ગુજરાત-ભારતનો ઇતિહાસ, વારસો અને ભૂગોળ</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="block text-xs font-extrabold text-slate-700 mb-1">પ્રશ્ન લખો *</label>
+            <textarea id="new-q-text" rows="3" required placeholder="અહીં પ્રશ્ન લખો..." class="w-full rounded-xl border border-slate-300 p-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-600"></textarea>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label class="block text-xs font-bold text-slate-700 mb-1">વિકલ્પ (A) *</label>
+              <input type="text" id="new-q-optA" required placeholder="વિકલ્પ A" class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm" />
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-slate-700 mb-1">વિકલ્પ (B) *</label>
+              <input type="text" id="new-q-optB" required placeholder="વિકલ્પ B" class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm" />
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-slate-700 mb-1">વિકલ્પ (C) *</label>
+              <input type="text" id="new-q-optC" required placeholder="વિકલ્પ C" class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm" />
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-slate-700 mb-1">વિકલ્પ (D) *</label>
+              <input type="text" id="new-q-optD" required placeholder="વિકલ્પ D" class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm" />
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-xs font-extrabold text-slate-700 mb-1">સાચો જવાબ *</label>
+            <select id="new-q-correct" required class="w-full rounded-xl border border-slate-300 px-3.5 py-2.5 text-sm font-bold text-emerald-700">
+              <option value="A">વિકલ્પ (A)</option>
+              <option value="B">વિકલ્પ (B)</option>
+              <option value="C">વિકલ્પ (C)</option>
+              <option value="D">વિકલ્પ (D)</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="block text-xs font-extrabold text-slate-700 mb-1">ઊંડી સ્ટેપ-બાય-સ્ટેપ સમજૂતી અને સરળ રીત *</label>
+            <textarea id="new-q-explanation" rows="3" required placeholder="Step 1: ...&#10;Step 2: ..." class="w-full rounded-xl border border-slate-300 p-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-600"></textarea>
+          </div>
+
+          <div class="pt-2 flex justify-end gap-3">
+            <button type="button" onclick="app.closeModal('modal-add-question')" class="px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-sm">બંધ કરો</button>
+            <button type="submit" class="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-sm shadow">
+              <i class="fa-solid fa-cloud-arrow-up mr-1.5"></i>પ્રશ્ન Cloud પર સેવ કરો
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== MODAL 2: USER PROFILE ==================== -->
+  <div id="modal-profile" class="hidden fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-md w-full shadow-2xl border border-slate-200 overflow-hidden">
+      <div class="bg-policeNavy text-white px-6 py-4 flex items-center justify-between">
+        <h3 class="font-extrabold text-lg"><i class="fa-solid fa-user-shield text-amber-400 mr-2"></i>વિદ્યાર્થી પ્રોફાઇલ</h3>
+        <button onclick="app.closeModal('modal-profile')" class="text-slate-300 hover:text-white text-xl"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <form onsubmit="app.saveProfileName(event)" class="p-6 space-y-4">
+        <div>
+          <label class="block text-xs font-extrabold text-slate-700 mb-1">તમારું પૂરું નામ (લીડરબોર્ડ માટે)</label>
+          <input type="text" id="input-profile-name" required placeholder="દા.ત. રાહુલભાઈ પરમાર (વડોદરા)" class="w-full rounded-xl border border-slate-300 px-3.5 py-2.5 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-blue-600" />
+        </div>
+        <div class="bg-slate-50 p-3 rounded-xl border border-slate-200 text-xs text-slate-600">
+          <strong>તમારો યુનિક યુઝર ID:</strong>
+          <div id="modal-user-uid" class="font-mono text-[11px] text-slate-800 mt-1 break-all">—</div>
+        </div>
+        <div class="flex justify-end gap-2">
+          <button type="button" onclick="app.closeModal('modal-profile')" class="px-4 py-2 rounded-xl bg-slate-100 text-slate-700 font-bold text-sm">બંધ કરો</button>
+          <button type="submit" class="px-5 py-2 rounded-xl bg-policeBlue text-white font-extrabold text-sm">નામ સેવ કરો</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ==================== MODAL 3: SUBMIT CONFIRMATION ==================== -->
+  <div id="modal-submit-confirm" class="hidden fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-md w-full shadow-2xl border border-slate-200 p-6 space-y-4">
+      <div class="flex items-center gap-3 text-amber-600">
+        <div class="w-11 h-11 rounded-full bg-amber-100 flex items-center justify-center text-xl">
+          <i class="fa-solid fa-triangle-exclamation"></i>
+        </div>
+        <h3 class="font-extrabold text-lg text-slate-900">શું તમે ટેસ્ટ સબમિટ કરવા માંગો છો?</h3>
+      </div>
+      <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-200 text-xs sm:text-sm space-y-1.5 text-slate-700">
+        <p>• કુલ પ્રશ્નો: <strong id="conf-total">0</strong></p>
+        <p>• OMR માં જવાબ આપેલ (A/B/C/D): <strong id="conf-answered" class="text-emerald-700">0</strong></p>
+        <p>• વિકલ્પ (E) અથવા ખાલી છોડેલ: <strong id="conf-unanswered" class="text-rose-700">0</strong></p>
+        <p class="text-[11px] text-slate-500 pt-1">નોંધ: (E) અથવા ખાલી છોડેલા પ્રશ્નો પર -0.25 નેગેટિવ માર્કિંગ લાગતું નથી.</p>
+      </div>
+      <div class="flex justify-end gap-3 pt-1">
+        <button onclick="app.closeModal('modal-submit-confirm')" class="px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-sm">પાછા જાઓ</button>
+        <button onclick="app.submitExam()" class="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-sm shadow">હા, પરિણામ જુઓ</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="bg-slate-900 text-slate-400 text-xs py-5 mt-12 border-t border-slate-800">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-2">
+      <p><strong class="text-white">SuccessStory</strong> — "પ્રેક્ટિસ એવી કરીએ, જે છેક સક્સેસ સુધી લઈ જાય"</p>
+      <p>ગુજરાત પોલીસ કોન્સ્ટેબલ (200 Q) • તલાટી કમ મંત્રી (100 Q) ઓનલાઇન OMR</p>
+    </div>
+  </footer>
+
+  <!-- Firebase v10.12.2 Modular SDK + Application Logic -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getFirestore, collection, addDoc, onSnapshot, getDocs, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+    // User's exact Firebase configuration for project: successstory-e364a
+    const firebaseConfig = {
+      apiKey: "AIzaSyA2upaPweNR9XQXtdVphzeyM-VT4PwXVbU",
+      authDomain: "successstory-e364a.firebaseapp.com",
+      projectId: "successstory-e364a",
+      storageBucket: "successstory-e364a.firebasestorage.app",
+      messagingSenderId: "186055884615",
+      appId: "1:186055884615:web:5bbc0ea9598759f8251662",
+      measurementId: "G-XEWXVYQJ92"
+    };
+
+    const LOCAL_Q_KEY = 'successstory_local_questions_v1';
+    const LOCAL_LB_KEY = 'successstory_local_leaderboard_v1';
+    const LOCAL_PROFILE_KEY = 'successstory_local_profile_v1';
+
+    // Exam Configurations (Police Constable 200 Q vs Talati-cum-Mantri 100 Q)
+    const EXAM_CONFIGS = {
+      CONSTABLE: {
+        id: 'CONSTABLE',
+        title: 'ગુજરાત પોલીસ કોન્સ્ટેબલ (LRD)',
+        totalQ: 200,
+        durationMinutes: 180,
+        badgeText: 'ગુજરાત પોલીસ કોન્સ્ટેબલ (LRD) • 200 પ્રશ્નો • 200 ગુણ • 3 કલાક',
+        heroTitle: 'પૂરેપૂરું <span class="text-amber-400">200 પ્રશ્નોનું કોન્સ્ટેબલ પેપર</span> અસલી OMR શીટ પર આપો!',
+        heroDesc: 'Part A (80 ગુણ) અને Part B (120 ગુણ) મુજબ સંપૂર્ણ 200 પ્રશ્નો, વિકલ્પ <strong>(E)</strong>, <strong>-0.25 નેગેટિવ માર્કિંગ</strong> અને ટેસ્ટ પૂરો થયે દરેક પ્રશ્નની <strong>ઊંડી સ્ટેપ-બાય-સ્ટેપ સમજૂતી</strong>.',
+        fullBtnText: 'પૂરેપૂરું 200 પ્રશ્નોનું કોન્સ્ટેબલ પેપર શરૂ કરો',
+        quickCards: [
+          { label: 'Part A + Part B', val: '80 + 120 = 200', icon: 'fa-layer-group', bg: 'bg-blue-100 text-blue-800' },
+          { label: 'લઘુત્તમ લાયકાત', val: 'બંનેમાં 40% ફરજિયાત', icon: 'fa-check-double', bg: 'bg-amber-100 text-amber-700' },
+          { label: 'નેગેટિવ માર્કિંગ', val: '-0.25 ગુણ (E સિવાય)', icon: 'fa-minus-circle', bg: 'bg-rose-100 text-rose-700' },
+          { label: 'પરીક્ષાનો સમય', val: '3 કલાક (180 મિનિટ)', icon: 'fa-clock', bg: 'bg-emerald-100 text-emerald-700' }
+        ],
+        sections: [
+          { id: 'reasoning', part: 'Part A', name: 'રીઝનિંગ અને ડેટા ઇન્ટરપ્રિટેશન', count: 30, icon: 'fa-brain', desc: 'શ્રેણી, કોડિંગ-ડિકોડિંગ, લોહીના સંબંધો, દિશા-અંતર અને ઘડિયાળ.' },
+          { id: 'maths', part: 'Part A', name: 'ગણિત (Quantitative Aptitude)', count: 30, icon: 'fa-calculator', desc: 'ટકાવારી, નફો-ખોટ, સાદું-ચક્રવૃદ્ધિ વ્યાજ, સમય-કામ અને ઝડપ-અંતર.' },
+          { id: 'gujarati', part: 'Part A', name: 'ગુજરાતી ભાષામાં ગ્રહણ', count: 20, icon: 'fa-language', desc: 'ફકરા પરથી પ્રશ્નો, સમાનાર્થી-વિરુદ્ધાર્થી, રૂઢિપ્રયોગો અને જોડણી.' },
+          { id: 'constitution', part: 'Part B', name: 'ભારતનું બંધારણ', count: 30, icon: 'fa-scale-balanced', desc: 'મૂળભૂત અધિકારો, રાજ્યનીતિના માર્ગદર્શક સિદ્ધાંતો, સંસદ અને સુધારા.' },
+          { id: 'gk_science', part: 'Part B', name: 'કરંટ અફેર્સ, વિજ્ઞાન અને સામાન્ય જ્ઞાન', count: 40, icon: 'fa-flask', desc: 'દૈનિક વિજ્ઞાન, ટેકનોલોજી, રમતગમત, પુરસ્કારો અને વર્તમાન પ્રવાહો.' },
+          { id: 'history_geo', part: 'Part B', name: 'ગુજરાત-ભારતનો ઇતિહાસ, વારસો અને ભૂગોળ', count: 50, icon: 'fa-landmark', desc: 'સિંધુ ખીણ, સોલંકી કાળ, ગાંધીયુગ, ગુજરાતની નદીઓ, જિલ્લાઓ અને મેળા.' }
+        ]
+      },
+      TALATI: {
+        id: 'TALATI',
+        title: 'તલાટી કમ મંત્રી / જુનિયર ક્લાર્ક (GPSSB)',
+        totalQ: 100,
+        durationMinutes: 60,
+        badgeText: 'તલાટી કમ મંત્રી / જુ. ક્લાર્ક • 100 પ્રશ્નો • 100 ગુણ • 1 કલાક',
+        heroTitle: 'પૂરેપૂરું <span class="text-amber-400">100 પ્રશ્નોનું તલાટી પેપર</span> અસલી OMR શીટ પર આપો!',
+        heroDesc: 'સામાન્ય જ્ઞાન (50), ગુજરાતી (20), અંગ્રેજી વ્યાકરણ (20) અને ગણિત-રીઝનિંગ (10) મુજબ પૂરેપૂરું <strong>100 પ્રશ્નોનું પેપર</strong> વિકલ્પ (E) અને <strong>ઊંડી સમજૂતી</strong> સાથે.',
+        fullBtnText: 'પૂરેપૂરું 100 પ્રશ્નોનું તલાટી પેપર શરૂ કરો',
+        quickCards: [
+          { label: 'કુલ પ્રશ્નો અને ગુણ', val: '100 પ્રશ્નો = 100 ગુણ', icon: 'fa-list-ol', bg: 'bg-blue-100 text-blue-800' },
+          { label: 'વિષય માળખું', val: '50 GK + 20 Guj + 20 Eng + 10 Math', icon: 'fa-table-columns', bg: 'bg-amber-100 text-amber-700' },
+          { label: 'નેગેટિવ માર્કિંગ', val: '-0.25 ગુણ (E સિવાય)', icon: 'fa-minus-circle', bg: 'bg-rose-100 text-rose-700' },
+          { label: 'પરીક્ષાનો સમય', val: '1 કલાક (60 મિનિટ)', icon: 'fa-clock', bg: 'bg-emerald-100 text-emerald-700' }
+        ],
+        sections: [
+          { id: 'talati_gk', part: 'વિભાગ ૧', name: 'સામાન્ય જ્ઞાન, ઇતિહાસ, ભૂગોળ, બંધારણ અને કરંટ', count: 50, icon: 'fa-landmark', desc: 'ગુજરાત અને ભારતનો ઇતિહાસ, ભૂગોળ, બંધારણ, પંચાયતી રાજ, વિજ્ઞાન અને કરંટ.' },
+          { id: 'gujarati', part: 'વિભાગ ૨', name: 'ગુજરાતી ભાષા અને વ્યાકરણ', count: 20, icon: 'fa-language', desc: 'સમાસ, અલંકાર, છંદ, સંધિ, રૂઢિપ્રયોગો, કહેવતો, જોડણી અને સાહિત્ય.' },
+          { id: 'english', part: 'વિભાગ ૩', name: 'અંગ્રેજી વ્યાકરણ (English Grammar)', count: 20, icon: 'fa-spell-check', desc: 'Tenses, Articles, Prepositions, Active-Passive, Direct-Indirect, Idioms & Synonyms.' },
+          { id: 'talati_math_reas', part: 'વિભાગ ૪', name: 'સામાન્ય ગણિત અને રીઝનિંગ', count: 10, icon: 'fa-calculator', desc: 'ટકાવારી, નફો-ખોટ, સરેરાશ, સમય-કામ, શ્રેણી અને તાર્કિક કસોટી.' }
+        ]
+      }
+    };
+
+    // Base Curated Question Bank
+    const BASE_QUESTIONS = [
+      {
+        id: 'm1', subject: 'maths',
+        text: 'એક ટ્રેન 72 કિમી/કલાકની ઝડપે દોડે છે, તો તેની ઝડપ મીટર/સેકન્ડમાં કેટલી થાય?',
+        options: { A: '15 મીટર/સેકન્ડ', B: '20 મીટર/સેકન્ડ', C: '25 મીટર/સેકન્ડ', D: '18 મીટર/સેકન્ડ' },
+        correct: 'B',
+        explanation: 'Step 1 (5/18 નો નિયમ):\n• 1 કિમી = 1000 મીટર અને 1 કલાક = 3600 સેકન્ડ.\n• 1000 / 3600 = 5/18.\n\nStep 2:\n• 72 × (5 / 18) = 4 × 5 = 20 મીટર/સેકન્ડ.'
+      },
+      {
+        id: 'm2', subject: 'maths',
+        text: '₹5,000 નું વાર્ષિક 10% લેખે 2 વર્ષનું સાદું વ્યાજ કેટલું થાય?',
+        options: { A: '₹500', B: '₹1,050', C: '₹1,000', D: '₹1,200' },
+        correct: 'C',
+        explanation: 'Step 1: 1 વર્ષનું વ્યાજ = (5000 × 10) / 100 = ₹500.\nStep 2: 2 વર્ષનું સાદું વ્યાજ = 500 × 2 = ₹1,000.'
+      },
+      {
+        id: 'm3', subject: 'maths',
+        text: 'જો 12 માણસો એક કામ 15 દિવસમાં પૂરું કરે, તો 20 માણસો તે જ કામ કેટલા દિવસમાં પૂરું કરશે?',
+        options: { A: '9 દિવસ', B: '10 દિવસ', C: '8 દિવસ', D: '12 દિવસ' },
+        correct: 'A',
+        explanation: 'Step 1: કુલ કામ = 12 × 15 = 180 યુનિટ.\nStep 2: 20 માણસોને લાગતા દિવસો = 180 / 20 = 9 દિવસ.'
+      },
+      {
+        id: 'm4', subject: 'maths',
+        text: 'બે સંખ્યાઓનો ગુણોત્તર 3 : 5 છે અને તેમનો સરવાળો 64 છે, તો તે બંને સંખ્યાઓ કઈ હશે?',
+        options: { A: '24 અને 40', B: '20 અને 44', C: '18 અને 46', D: '30 અને 34' },
+        correct: 'A',
+        explanation: 'Step 1: કુલ ભાગ = 3 + 5 = 8.\nStep 2: 1 ભાગ = 64 / 8 = 8.\nStep 3: સંખ્યાઓ = 3×8 = 24 અને 5×8 = 40.'
+      },
+      {
+        id: 'r1', subject: 'reasoning',
+        text: 'શ્રેણી પૂર્ણ કરો: 2, 6, 12, 20, 30, ?',
+        options: { A: '36', B: '40', C: '42', D: '44' },
+        correct: 'C',
+        explanation: 'Step 1: તફાવત +4, +6, +8, +10 છે.\nStep 2: આગળ +12 ઉમેરાતા 30 + 12 = 42.'
+      },
+      {
+        id: 'r2', subject: 'reasoning',
+        text: 'ઘડિયાળમાં 3:30 વાગ્યા હોય, ત્યારે કલાક કાંટો અને મિનિટ કાંટા વચ્ચે કેટલા અંશનો ખૂણો બને?',
+        options: { A: '90°', B: '75°', C: '60°', D: '85°' },
+        correct: 'B',
+        explanation: 'Step 1: કલાક કાંટો 3.5 કલાકમાં 3.5 × 30° = 105° પર.\nStep 2: મિનિટ કાંટો 30 મિનિટમાં 30 × 6° = 180° પર.\nStep 3: ખૂણો = 180° - 105° = 75°.'
+      },
+      {
+        id: 'r3', subject: 'reasoning',
+        text: 'જો સાંકેતિક ભાષામાં PEN ને QFO લખવામાં આવે, તો BOOK ને કેવી રીતે લખાશે?',
+        options: { A: 'CPPL', B: 'CNNL', C: 'DQQL', D: 'CPPM' },
+        correct: 'A',
+        explanation: 'Step 1: દરેક અક્ષરમાં +1 આગળ વધવાનો નિયમ છે.\nStep 2: B→C, O→P, O→P, K→L એટલે CPPL.'
+      },
+      {
+        id: 'g1', subject: 'gujarati',
+        text: '"આકાશ-પાતાળ એક કરવા" — આ રૂઢિપ્રયોગનો સાચો અર્થ શું થાય?',
+        options: { A: 'ખૂબ ઊંચે ઉડવું', B: 'ખૂબ જ મહેનત કે પ્રયત્ન કરવો', C: 'ગુસ્સે થઈ જવું', D: 'નિરાશ થઈ જવું' },
+        correct: 'B',
+        explanation: 'સમજૂતી: "આકાશ-પાતાળ એક કરવા" એટલે કોઈ કાર્ય કે લક્ષ્ય માટે અથાગ પ્રયત્ન કરવો.'
+      },
+      {
+        id: 'g2', subject: 'gujarati',
+        text: 'નીચેનામાંથી કઈ જોડણી સાચી છે?',
+        options: { A: 'પરીક્ષા', B: 'પરિક્ષા', C: 'પરીકશા', D: 'પરિકશા' },
+        correct: 'A',
+        explanation: 'નિયમ: "પરિ + ઈક્ષા" દીર્ઘ સંધિથી "પરીક્ષા" બને છે, જેમાં "રી" દીર્ઘ (ી) આવે છે.'
+      },
+      {
+        id: 'e1', subject: 'english',
+        text: 'Fill in the blank with appropriate Article:\nHe is ______ honest police officer.',
+        options: { A: 'a', B: 'an', C: 'the', D: 'No article' },
+        correct: 'B',
+        explanation: 'Step 1: "honest" નો ઉચ્ચાર સ્વર ("ઑનેસ્ટ") થી શરૂ થાય છે.\nStep 2: સ્વર ઉચ્ચાર પહેલાં "an" આર્ટિકલ આવે.'
+      },
+      {
+        id: 'e2', subject: 'english',
+        text: 'Choose the correct Passive Voice:\n"The police caught the thief."',
+        options: { A: 'The thief is caught by the police.', B: 'The thief was caught by the police.', C: 'The thief has caught by the police.', D: 'The thief were caught by the police.' },
+        correct: 'B',
+        explanation: 'Step 1: વાક્ય Simple Past (caught) માં છે.\nStep 2: Passive = Object + was/were + V3 + by + Subject → "The thief was caught by the police."'
+      },
+      {
+        id: 'c1', subject: 'constitution',
+        text: 'ભારતીય બંધારણના કયા અનુચ્છેદ હેઠળ "અસ્પૃશ્યતા નાબૂદી" ની જોગવાઈ છે?',
+        options: { A: 'અનુચ્છેદ 14', B: 'અનુચ્છેદ 15', C: 'અનુચ્છેદ 17', D: 'અનુચ્છેદ 18' },
+        correct: 'C',
+        explanation: 'સમજૂતી: અનુચ્છેદ 17 અસ્પૃશ્યતા નાબૂદી (Abolition of Untouchability) સાથે સંબંધિત છે.'
+      },
+      {
+        id: 'c2', subject: 'constitution',
+        text: 'ગુજરાત પંચાયત અધિનિયમ, 1993 મુજબ ગ્રામ પંચાયતના વહીવટી વડા (સચિવ) કોણ હોય છે?',
+        options: { A: 'સરપંચ', B: 'તલાટી કમ મંત્રી', C: 'TDO', D: 'મામલતદાર' },
+        correct: 'B',
+        explanation: 'સમજૂતી: તલાટી કમ મંત્રી ગ્રામ પંચાયતના વહીવટી વડા અને સચિવ તરીકે ફરજ બજાવે છે.'
+      },
+      {
+        id: 's1', subject: 'gk_science',
+        text: 'માનવ શરીરમાં લોહી ગંઠાઈ જવાની ક્રિયામાં કયું વિટામિન મદદરૂપ થાય છે?',
+        options: { A: 'વિટામિન A', B: 'વિટામિન C', C: 'વિટામિન D', D: 'વિટામિન K' },
+        correct: 'D',
+        explanation: 'સમજૂતી: વિટામિન K લોહી ગંઠાવાની (Blood Clotting) પ્રક્રિયા માટે જરૂરી છે.'
+      },
+      {
+        id: 'h1', subject: 'history_geo',
+        text: 'પાટણની પ્રખ્યાત "રાણીની વાવ" કોણે બંધાવી હતી?',
+        options: { A: 'રાણી મીનળદેવી', B: 'રાણી ઉદયમતી', C: 'રાણી નાયિકાદેવી', D: 'રાણી ભાનુમતી' },
+        correct: 'B',
+        explanation: 'સમજૂતી: સોલંકી રાજા ભીમદેવ પ્રથમની યાદમાં રાણી ઉદયમતીએ પાટણ ખાતે રાણીની વાવ બંધાવી હતી.'
+      },
+      {
+        id: 'h2', subject: 'history_geo',
+        text: 'ગુજરાતમાં વહેતી સૌથી લાંબી નદી કઈ છે?',
+        options: { A: 'નર્મદા', B: 'તાપી', C: 'સાબરમતી', D: 'મહી' },
+        correct: 'C',
+        explanation: 'સમજૂતી: ગુજરાતની અંદર વહેતી લંબાઈની દ્રષ્ટિએ સાબરમતી સૌથી લાંબી નદી છે.'
+      }
+    ];
+
+    // Parametric Question Generator Engine (For filling 100 Q / 200 Q Full Papers & Bulk Add)
+    function generateParametricQuestion(subject, seedIndex) {
+      const n = seedIndex + 1;
+
+      if (subject === 'maths' || (subject === 'talati_math_reas' && n % 2 === 1)) {
+        const mode = n % 3;
+        if (mode === 0) {
+          const mult = (n % 8) + 2;
+          const kmh = mult * 18;
+          const ms = mult * 5;
+          return {
+            id: `gen_m_${n}_${Date.now()}`,
+            subject,
+            text: `એક ટ્રેન ${kmh} કિમી/કલાકની ઝડપે ચાલે છે, તો તેની ઝડપ મીટર/સેકન્ડમાં કેટલી થાય?`,
+            options: { A: `${ms - 5} m/s`, B: `${ms} m/s`, C: `${ms + 5} m/s`, D: `${ms + 10} m/s` },
+            correct: 'B',
+            explanation: `Step 1: 1 km/h = 5/18 m/s.\nStep 2: ${kmh} × (5 / 18) = ${mult} × 5 = ${ms} m/s.`
+          };
+        } else if (mode === 1) {
+          const p = ((n % 8) + 2) * 1000;
+          const r = (n % 4) + 5;
+          const t = (n % 3) + 2;
+          const si = (p * r * t) / 100;
+          return {
+            id: `gen_m_${n}_${Date.now()}`,
+            subject,
+            text: `₹${p.toLocaleString('en-IN')} નું વાર્ષિક ${r}% લેખે ${t} વર્ષનું સાદું વ્યાજ કેટલું થાય?`,
+            options: { A: `₹${si - 100}`, B: `₹${si + 100}`, C: `₹${si}`, D: `₹${si + 250}` },
+            correct: 'C',
+            explanation: `Step 1: 1 વર્ષનું વ્યાજ = (${p} × ${r}) / 100 = ₹${(p * r) / 100}.\nStep 2: ${t} વર્ષનું વ્યાજ = ₹${(p * r) / 100} × ${t} = ₹${si}.`
+          };
+        } else {
+          const base = ((n % 9) + 2) * 100;
+          const pct = ((n % 4) + 1) * 10;
+          const ans = (base * pct) / 100;
+          return {
+            id: `gen_m_${n}_${Date.now()}`,
+            subject,
+            text: `${base} ના ${pct}% કેટલા થાય?`,
+            options: { A: `${ans}`, B: `${ans + 15}`, C: `${ans - 10}`, D: `${ans + 30}` },
+            correct: 'A',
+            explanation: `Step 1: (${base} × ${pct}) / 100 = ${ans}.`
+          };
+        }
+      }
+
+      if (subject === 'reasoning' || (subject === 'talati_math_reas' && n % 2 === 0)) {
+        const start = (n % 12) + 3;
+        const diff = (n % 5) + 3;
+        const s1 = start, s2 = start + diff, s3 = start + 2 * diff, s4 = start + 3 * diff, ans = start + 4 * diff;
+        return {
+          id: `gen_r_${n}_${Date.now()}`,
+          subject,
+          text: `શ્રેણી પૂર્ણ કરો: ${s1}, ${s2}, ${s3}, ${s4}, ?`,
+          options: { A: `${ans - 1}`, B: `${ans}`, C: `${ans + diff}`, D: `${ans + 3}` },
+          correct: 'B',
+          explanation: `Step 1: દરેક પદમાં +${diff} નો વધારો થાય છે.\nStep 2: ${s4} + ${diff} = ${ans}.`
+        };
+      }
+
+      const GENERAL_POOL = [
+        {
+          subject: 'constitution',
+          text: 'ભારતીય બંધારણના કયા અનુચ્છેદને ડૉ. આંબેડકરે "બંધારણનો આત્મા" કહ્યો છે?',
+          options: { A: 'અનુચ્છેદ 19', B: 'અનુચ્છેદ 21', C: 'અનુચ્છેદ 32', D: 'અનુચ્છેદ 356' },
+          correct: 'C',
+          explanation: 'સમજૂતી: અનુચ્છેદ 32 (બંધારણીય ઇલાજોનો અધિકાર) ને બંધારણનો આત્મા કહેવામાં આવે છે.'
+        },
+        {
+          subject: 'history_geo',
+          text: 'ગુજરાતની કઈ નદી પર "ઉકાઈ બંધ" બાંધવામાં આવ્યો છે?',
+          options: { A: 'નર્મદા', B: 'તાપી', C: 'મહી', D: 'સાબરમતી' },
+          correct: 'B',
+          explanation: 'સમજૂતી: ઉકાઈ બંધ તાપી નદી પર આવેલો છે.'
+        },
+        {
+          subject: 'gk_science',
+          text: 'ધ્વનિ (અવાજ) ની તીવ્રતા માપવા માટે કયો એકમ વપરાય છે?',
+          options: { A: 'હર્ટ્ઝ (Hz)', B: 'ડેસિબલ (dB)', C: 'એમ્પિયર (A)', D: 'વોલ્ટ (V)' },
+          correct: 'B',
+          explanation: 'સમજૂતી: ધ્વનિની તીવ્રતા ડેસિબલ (dB) માં મપાય છે.'
+        },
+        {
+          subject: 'gujarati',
+          text: '"સૂર્ય" શબ્દનો સમાનાર્થી શબ્દ કયો નથી?',
+          options: { A: 'રવિ', B: 'ભાસ્કર', C: 'દિનકર', D: 'શશાંક' },
+          correct: 'D',
+          explanation: 'સમજૂતી: "શશાંક" એ ચંદ્રનો સમાનાર્થી શબ્દ છે.'
+        },
+        {
+          subject: 'english',
+          text: 'Choose the correct Antonym of: "ANCIENT"',
+          options: { A: 'Old', B: 'Modern', C: 'Historic', D: 'Past' },
+          correct: 'B',
+          explanation: 'સમજૂતી: "Ancient" (પ્રાચીન) નો વિરુદ્ધાર્થી "Modern" (આધુનિક) થાય.'
+        }
+      ];
+
+      let pool = GENERAL_POOL.filter(x => x.subject === subject);
+      if (pool.length === 0) {
+        pool = subject === 'talati_gk'
+          ? GENERAL_POOL.filter(x => ['constitution', 'history_geo', 'gk_science'].includes(x.subject))
+          : GENERAL_POOL;
+      }
+      const picked = pool[n % pool.length];
+      return {
+        id: `gen_${subject}_${n}_${Date.now()}`,
+        subject,
+        text: `[પ્રેક્ટિસ #${n}] ${picked.text}`,
+        options: { ...picked.options },
+        correct: picked.correct,
+        explanation: picked.explanation
+      };
+    }
+
+    // Date-based Current Affairs Question Builder
+    function buildDateCurrentAffairsQuestions(dateStr) {
+      const safeDate = dateStr || new Date().toISOString().slice(0, 10);
+      const parts = safeDate.split('-');
+      const formattedDate = parts.length === 3 ? `${parts[2]}-${parts[1]}-${parts[0]}` : safeDate;
+      const monthNum = parts.length === 3 ? parseInt(parts[1], 10) : 11;
+
+      const monthThemes = {
+        1: 'પ્રજાસત્તાક દિન, રાષ્ટ્રીય યુવા દિન અને વાર્ષિક આર્થિક/રમતગમત અહેવાલ',
+        2: 'રાષ્ટ્રીય વિજ્ઞાન દિન (28 ફેબ્રુઆરી), બજેટ અને પર્યાવરણ સંરક્ષણ',
+        3: 'વિશ્વ જળ દિન, આંતરરાષ્ટ્રીય મહિલા દિન અને ગુજરાત સ્થાપના/સાંસ્કૃતિક અપડેટ',
+        4: 'વિશ્વ આરોગ્ય દિન, પૃથ્વી દિન અને અવકાશ/ટેકનોલોજી મિશન',
+        5: 'ગુજરાત સ્થાપના દિન (1 મે), જૈવવિવિધતા દિન અને આંતરરાષ્ટ્રીય કરાર',
+        6: 'વિશ્વ પર્યાવરણ દિન (5 જૂન), યોગ દિન (21 જૂન) અને હવામાન/કૃષિ અપડેટ',
+        7: 'ચંદ્રયાન/ISRO મિશન, વસ્તી/આરોગ્ય સૂચકાંક અને રાષ્ટ્રીય પુરસ્કારો',
+        8: 'સ્વતંત્રતા દિન (15 ઓગસ્ટ), રમતગમત (ઓલિમ્પિક/એશિયન ગેમ્સ) અને ડિજિટલ ગવર્નન્સ',
+        9: 'શિક્ષક દિન, ઓઝોન દિન અને ગુજરાતની ઔદ્યોગિક/શૈક્ષણિક યોજનાઓ',
+        10: 'ગાંધી જયંતી (2 ઓક્ટોબર), રાષ્ટ્રીય એકતા દિન (31 ઓક્ટોબર) અને સુરક્ષા/પોલીસ આધુનિકીકરણ',
+        11: 'બંધારણ દિન (26 નવેમ્બર), ગુરુ નાનક જયંતી અને રાષ્ટ્રીય/આંતરરાષ્ટ્રીય સમિટ',
+        12: 'માનવ અધિકાર દિન, સુશાસન દિન અને વાર્ષિક સાહિત્ય/વિજ્ઞાન સન્માન'
+      };
+      const theme = monthThemes[monthNum] || 'રાષ્ટ્રીય, આંતરરાષ્ટ્રીય અને ગુજરાત કરંટ અફેર્સ';
+
+      return [
+        {
+          subject: 'gk_science',
+          text: `[Current Affairs • ${formattedDate}] ${formattedDate} ની કરંટ અફેર્સ તૈયારી મુજબ "${theme}" અંતર્ગત પરીક્ષામાં કયા પાસા પર સૌથી વધુ ધ્યાન કેન્દ્રિત કરવું જરૂરી છે?`,
+          options: {
+            A: 'માત્ર અફવાઓ અને સોશિયલ મીડિયા પોસ્ટ પર',
+            B: 'સત્તાવાર યોજના, તારીખ, સંબંધિત સંસ્થા અને ગુજરાત/ભારત પર તેની અસર પર',
+            C: 'માત્ર જૂના 20 વર્ષ પહેલાંના આંકડા પર',
+            D: 'કોઈ પણ વિગત યાદ રાખ્યા વગર માત્ર અનુમાન પર'
+          },
+          correct: 'B',
+          explanation: `Step 1 (તારીખ ${formattedDate} મુજબ): આ મહિનાનો મુખ્ય વિષય "${theme}" છે.\nStep 2 (પરીક્ષા ટ્રીક): કરંટ અફેર્સના પ્રશ્નોમાં હંમેશા સત્તાવાર નિર્ણય/યોજના, સંબંધિત મંત્રાલય/સંસ્થા અને ગુજરાત સાથે જોડાયેલી વિગત પૂછાય છે.`
+        },
+        {
+          subject: 'constitution',
+          text: `[Current Affairs & Polity • ${formattedDate}] વહીવટી અને પોલીસ/તલાટી પરીક્ષાના દ્રષ્ટિકોણે તાજેતરના નીતિગત નિર્ણયો અને બંધારણીય જોગવાઈઓ વચ્ચે સંતુલન જાળવવા કયો સિદ્ધાંત સર્વોચ્ચ રહે છે?`,
+          options: {
+            A: 'કાયદાનું શાસન (Rule of Law) અને બંધારણીય સર્વોપરિતા',
+            B: 'વ્યક્તિગત પસંદગી મુજબ નિયમ બદલવો',
+            C: 'માત્ર સ્થાનિક મૌખિક સૂચના',
+            D: 'કોઈ પણ કાયદાકીય મર્યાદા વગરનો નિર્ણય'
+          },
+          correct: 'A',
+          explanation: `Step 1 (${formattedDate} અપડેટ): ભારતીય લોકશાહી અને વહીવટી વ્યવસ્થામાં "કાયદાનું શાસન (Rule of Law)" અને બંધારણીય મર્યાદા સર્વોચ્ચ છે.\nStep 2: પ્રશ્ન હલ કરતી વખતે બંધારણીય અને કાયદાકીય વિકલ્પ પસંદ કરવો હંમેશા યોગ્ય રહે છે.`
+        },
+        {
+          subject: 'gk_science',
+          text: `[Science & Tech Current • ${formattedDate}] આધુનિક ડિજિટલ ગવર્નન્સ, સાયબર સુરક્ષા અને વિજ્ઞાન-ટેકનોલોજી ક્ષેત્રે (${formattedDate} સંદર્ભ) નાગરિકો માટે સૌથી મહત્વની બાબત કઈ છે?`,
+          options: {
+            A: 'OTP અને પાસવર્ડ કોઈને પણ શેર કરવા',
+            B: 'સાયબર સુરક્ષા જાગૃતિ, ડેટા ગોપનીયતા અને સત્તાવાર પોર્ટલનો ઉપયોગ',
+            C: 'અજાણી લિંક પર તરત ક્લિક કરવું',
+            D: 'સિક્યોરિટી અપડેટ બંધ રાખવા'
+          },
+          correct: 'B',
+          explanation: `Step 1 (${formattedDate}): પોલીસ અને સરકારી પરીક્ષાઓમાં સાયબર સુરક્ષા, ડિજિટલ સેવાઓ અને વિજ્ઞાન-ટેકનોલોજીના પ્રશ્નો સતત પૂછાય છે.\nStep 2: સત્તાવાર પોર્ટલ અને સાયબર સુરક્ષાના નિયમો સાચો વિકલ્પ દર્શાવે છે.`
+        }
+      ];
+    }
+
+    // Application State
+    const state = {
+      cloudConnected: false,
+      userId: '',
+      userName: 'વિદ્યાર્થી',
+      selectedCategory: 'CONSTABLE', // 'CONSTABLE' (200 Q) or 'TALATI' (100 Q)
+      questions: [...BASE_QUESTIONS],
+      leaderboard: [],
+      leaderboardFilter: 'ALL',
+      activeExam: {
+        category: 'CONSTABLE',
+        title: '',
+        partLabel: '',
+        questions: [],
+        answers: {},
+        currentIndex: 0,
+        timerSeconds: 0,
+        timerInterval: null,
+        showHint: false,
+        sectionStarts: []
+      },
+      lastResult: null
+    };
+
+    let db = null;
+    let unsubQuestions = null;
+    let unsubLeaderboard = null;
+
+    function getOrCreateLocalUserId() {
+      let uid = localStorage.getItem('successstory_uid_v1');
+      if (!uid) {
+        uid = 'user_' + Math.random().toString(36).substring(2, 10);
+        localStorage.setItem('successstory_uid_v1', uid);
+      }
+      return uid;
+    }
+
+    function setCloudStatusUI(isLive, labelText) {
+      state.cloudConnected = isLive;
+      const dot = document.getElementById('cloud-sync-dot');
+      const text = document.getElementById('cloud-sync-text');
+      const badge = document.getElementById('cloud-sync-badge');
+      if (isLive) {
+        dot.className = 'w-2 h-2 rounded-full bg-emerald-400 animate-pulse';
+        text.textContent = labelText || 'Live Cloud Sync';
+        badge.className = 'inline-flex items-center gap-1.5 text-[11px] bg-emerald-950/90 text-emerald-300 border border-emerald-500/50 px-2.5 py-0.5 rounded-full font-bold';
+      } else {
+        dot.className = 'w-2 h-2 rounded-full bg-amber-400';
+        text.textContent = labelText || 'Local Only';
+        badge.className = 'inline-flex items-center gap-1.5 text-[11px] bg-slate-800 text-amber-300 border border-amber-500/40 px-2.5 py-0.5 rounded-full font-bold';
+      }
+    }
+
+    function loadLocalData() {
+      try {
+        const savedName = localStorage.getItem(LOCAL_PROFILE_KEY);
+        if (savedName) {
+          updateUserNameUI(savedName);
+        } else {
+          updateUserNameUI('વિદ્યાર્થી-' + state.userId.slice(-4).toUpperCase());
+        }
+
+        const savedQs = JSON.parse(localStorage.getItem(LOCAL_Q_KEY) || '[]');
+        state.questions = mergeQuestions([...BASE_QUESTIONS, ...savedQs]);
+
+        const savedLb = JSON.parse(localStorage.getItem(LOCAL_LB_KEY) || '[]');
+        state.leaderboard = savedLb.sort((a, b) => (b.netScore || 0) - (a.netScore || 0));
+      } catch (e) {
+        console.warn('Local storage read warning:', e);
+      }
+    }
+
+    function mergeQuestions(list) {
+      const seen = new Set();
+      const out = [];
+      for (const q of list) {
+        const key = q.id || `${q.subject}_${q.text}`;
+        if (!seen.has(key)) {
+          seen.add(key);
+          out.push(q);
+        }
+      }
+      return out;
+    }
+
+    function saveLocalQuestionsOnly(customQuestions) {
+      try {
+        localStorage.setItem(LOCAL_Q_KEY, JSON.stringify(customQuestions));
+      } catch (e) {
+        console.warn('Local questions save warning:', e);
+      }
+    }
+
+    function saveLocalLeaderboardEntry(entry) {
+      try {
+        const existing = JSON.parse(localStorage.getItem(LOCAL_LB_KEY) || '[]');
+        existing.push(entry);
+        existing.sort((a, b) => (b.netScore || 0) - (a.netScore || 0));
+        localStorage.setItem(LOCAL_LB_KEY, JSON.stringify(existing.slice(0, 100)));
+        state.leaderboard = existing;
+        renderLeaderboard();
+      } catch (e) {
+        console.warn('Local leaderboard save warning:', e);
+      }
+    }
+
+    // Connect to Firebase Firestore (`questions` and `leaderboard` collections) with graceful fallback
+    function initFirebaseSync(showFeedback = false) {
+      const icon = document.getElementById('sync-btn-icon');
+      if (icon) icon.classList.add('fa-spin');
+
+      try {
+        const app = initializeApp(firebaseConfig);
+        db = getFirestore(app);
+
+        if (unsubQuestions) unsubQuestions();
+        if (unsubLeaderboard) unsubLeaderboard();
+
+        // Real-time listener for shared 'questions' collection
+        unsubQuestions = onSnapshot(
+          collection(db, 'questions'),
+          (snapshot) => {
+            const cloudQs = [];
+            snapshot.forEach((docSnap) => {
+              cloudQs.push({ id: docSnap.id, ...docSnap.data() });
+            });
+            const localSaved = JSON.parse(localStorage.getItem(LOCAL_Q_KEY) || '[]');
+            state.questions = mergeQuestions([...BASE_QUESTIONS, ...cloudQs, ...localSaved]);
+            setCloudStatusUI(true, 'Live Cloud Sync');
+            renderDashboard();
+            if (icon) icon.classList.remove('fa-spin');
+            if (showFeedback) showToast('Firestore સાથે Live Cloud Sync સફળ!', 'success');
+          },
+          (err) => {
+            console.warn('Firestore questions fallback to localStorage:', err.message);
+            setCloudStatusUI(false, 'Local Only');
+            if (icon) icon.classList.remove('fa-spin');
+            if (showFeedback) showToast('Local Mode માં ચાલી રહ્યું છે (Firestore Rules તપાસો).', 'info');
+          }
+        );
+
+        // Real-time listener for shared 'leaderboard' collection
+        unsubLeaderboard = onSnapshot(
+          collection(db, 'leaderboard'),
+          (snapshot) => {
+            const cloudScores = [];
+            snapshot.forEach((docSnap) => {
+              cloudScores.push({ id: docSnap.id, ...docSnap.data() });
+            });
+            const localScores = JSON.parse(localStorage.getItem(LOCAL_LB_KEY) || '[]');
+            const combined = [...cloudScores, ...localScores];
+            const dedup = [];
+            const seenIds = new Set();
+            for (const item of combined) {
+              const k = item.id || `${item.uid}_${item.createdAt}`;
+              if (!seenIds.has(k)) {
+                seenIds.add(k);
+                dedup.push(item);
+              }
+            }
+            dedup.sort((a, b) => (b.netScore || 0) - (a.netScore || 0));
+            state.leaderboard = dedup;
+            setCloudStatusUI(true, 'Live Cloud Sync');
+            renderLeaderboard();
+          },
+          (err) => {
+            console.warn('Firestore leaderboard fallback to localStorage:', err.message);
+            setCloudStatusUI(false, 'Local Only');
+          }
+        );
+
+        // Load user profile if stored in Firestore
+        getDoc(doc(db, 'user_profiles', state.userId))
+          .then((snap) => {
+            if (snap.exists() && snap.data().name) {
+              updateUserNameUI(snap.data().name);
+              localStorage.setItem(LOCAL_PROFILE_KEY, snap.data().name);
+            }
+          })
+          .catch(() => {});
+      } catch (err) {
+        console.warn('Firebase init warning, using Local Only:', err);
+        setCloudStatusUI(false, 'Local Only');
+        if (icon) icon.classList.remove('fa-spin');
+      }
+    }
+
+    async function manualSync() {
+      initFirebaseSync(true);
+      if (db) {
+        try {
+          await getDocs(collection(db, 'questions'));
+        } catch (e) {
+          // Handled via listener fallback
+        }
+      }
+    }
+
+    function updateUserNameUI(name) {
+      state.userName = name;
+      document.getElementById('header-user-name').textContent = name;
+      document.getElementById('user-avatar-initial').textContent = name.charAt(0).toUpperCase();
+      document.getElementById('input-profile-name').value = name;
+    }
+
+    function showToast(message, type = 'info') {
+      const container = document.getElementById('toast-container');
+      const toast = document.createElement('div');
+      const colors = {
+        success: 'bg-emerald-700 border-emerald-400 text-white',
+        error: 'bg-rose-700 border-rose-400 text-white',
+        info: 'bg-slate-900 border-amber-500 text-white'
+      };
+      toast.className = `${colors[type] || colors.info} border-l-4 px-4 py-3 rounded-xl shadow-xl text-xs sm:text-sm font-bold flex items-center justify-between gap-2 pointer-events-auto transition-all`;
+      toast.innerHTML = `<span>${message}</span>`;
+      container.appendChild(toast);
+      setTimeout(() => {
+        toast.style.opacity = '0';
+        setTimeout(() => toast.remove(), 300);
+      }, 3400);
+    }
+
+    function switchExamCategory(cat) {
+      state.selectedCategory = cat;
+      const btnConst = document.getElementById('btn-cat-constable');
+      const btnTalati = document.getElementById('btn-cat-talati');
+
+      if (cat === 'CONSTABLE') {
+        btnConst.className = 'px-3.5 py-2.5 rounded-lg text-xs sm:text-sm font-extrabold transition flex items-center justify-center gap-2 bg-policeNavy text-amber-400 shadow';
+        btnTalati.className = 'px-3.5 py-2.5 rounded-lg text-xs sm:text-sm font-extrabold transition flex items-center justify-center gap-2 text-slate-700 hover:bg-white/70';
+      } else {
+        btnTalati.className = 'px-3.5 py-2.5 rounded-lg text-xs sm:text-sm font-extrabold transition flex items-center justify-center gap-2 bg-policeNavy text-amber-400 shadow';
+        btnConst.className = 'px-3.5 py-2.5 rounded-lg text-xs sm:text-sm font-extrabold transition flex items-center justify-center gap-2 text-slate-700 hover:bg-white/70';
+      }
+
+      renderDashboard();
+    }
+
+    function renderDashboard() {
+      const cfg = EXAM_CONFIGS[state.selectedCategory];
+      document.getElementById('total-bank-count').textContent = state.questions.length;
+
+      document.getElementById('hero-pattern-badge').innerHTML = `<span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span> ${cfg.badgeText}`;
+      document.getElementById('hero-title').innerHTML = cfg.heroTitle;
+      document.getElementById('hero-desc').innerHTML = cfg.heroDesc;
+      document.getElementById('hero-full-btn-text').textContent = cfg.fullBtnText;
+      document.getElementById('hero-q-big-num').textContent = `${cfg.totalQ} Q`;
+      document.getElementById('hero-time-sub').textContent = `${cfg.durationMinutes} મિનિટ • OMR શીટ`;
+
+      const cardsWrap = document.getElementById('pattern-info-cards');
+      cardsWrap.innerHTML = cfg.quickCards.map(c => `
+        <div class="bg-white rounded-xl p-4 shadow-sm border border-slate-200 flex items-center gap-3.5">
+          <div class="w-11 h-11 rounded-xl ${c.bg} flex items-center justify-center text-lg font-bold shrink-0">
+            <i class="fa-solid ${c.icon}"></i>
+          </div>
+          <div>
+            <p class="text-xs text-slate-500 font-semibold">${c.label}</p>
+            <p class="text-sm sm:text-base font-extrabold text-slate-900">${c.val}</p>
+          </div>
+        </div>
+      `).join('');
+
+      const partBadges = document.getElementById('subjects-part-badges');
+      if (state.selectedCategory === 'CONSTABLE') {
+        partBadges.innerHTML = `
+          <span class="px-2.5 py-1 rounded-md bg-blue-100 text-blue-900">Part A (80 ગુણ)</span>
+          <span class="px-2.5 py-1 rounded-md bg-amber-100 text-amber-900">Part B (120 ગુણ)</span>
+        `;
+      } else {
+        partBadges.innerHTML = `
+          <span class="px-2.5 py-1 rounded-md bg-blue-100 text-blue-900">કુલ 100 ગુણ</span>
+          <span class="px-2.5 py-1 rounded-md bg-amber-100 text-amber-900">60 મિનિટ</span>
+        `;
+      }
+
+      const grid = document.getElementById('subjects-grid');
+      grid.innerHTML = '';
+
+      cfg.sections.forEach((sec) => {
+        const card = document.createElement('div');
+        card.className = 'bg-white rounded-2xl p-5 shadow-sm hover:shadow-md border border-slate-200 transition flex flex-col justify-between';
+        card.innerHTML = `
+          <div>
+            <div class="flex items-center justify-between gap-2 mb-3">
+              <span class="text-[11px] font-extrabold px-2.5 py-1 rounded-lg border bg-blue-50 text-blue-900 border-blue-200">
+                ${sec.part} • ${sec.count} ગુણ (${sec.count} Q)
+              </span>
+              <span class="text-xs font-bold text-emerald-700">
+                <i class="fa-solid fa-circle-check mr-1"></i>OMR તૈયાર
+              </span>
+            </div>
+            <div class="flex items-start gap-3">
+              <div class="w-10 h-10 rounded-xl bg-slate-100 text-policeBlue flex items-center justify-center text-lg shrink-0 mt-0.5">
+                <i class="fa-solid ${sec.icon}"></i>
+              </div>
+              <div>
+                <h3 class="font-extrabold text-slate-900 text-base leading-snug">${sec.name}</h3>
+                <p class="text-xs text-slate-500 mt-1 leading-relaxed">${sec.desc}</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="mt-5 pt-3.5 border-t border-slate-100 flex items-center justify-between gap-2">
+            <button onclick="app.startSectionExam('${sec.id}')" class="w-full py-2.5 px-4 rounded-xl bg-policeNavy hover:bg-policeBlue text-white font-bold text-xs sm:text-sm transition flex items-center justify-center gap-2">
+              <i class="fa-solid fa-pen-to-square text-amber-400"></i> ${sec.count} પ્રશ્નોનો OMR ટેસ્ટ આપો
+            </button>
+          </div>
+        `;
+        grid.appendChild(card);
+      });
+    }
+
+    function buildQuestionListForSection(sec, targetCount, globalOffset = 0) {
+      let matching = [];
+      if (sec.id === 'talati_gk') {
+        matching = state.questions.filter(q => ['constitution', 'history_geo', 'gk_science'].includes(q.subject));
+      } else if (sec.id === 'talati_math_reas') {
+        matching = state.questions.filter(q => ['maths', 'reasoning'].includes(q.subject));
+      } else {
+        matching = state.questions.filter(q => q.subject === sec.id);
+      }
+
+      const result = [];
+      matching.forEach((q) => {
+        if (result.length < targetCount) {
+          result.push({ ...q, sectionName: sec.name, part: sec.part });
+        }
+      });
+
+      let genCounter = globalOffset;
+      while (result.length < targetCount) {
+        const genQ = generateParametricQuestion(sec.id, genCounter++);
+        result.push({ ...genQ, sectionName: sec.name, part: sec.part });
+      }
+
+      return result;
+    }
+
+    function startFullExam() {
+      const cfg = EXAM_CONFIGS[state.selectedCategory];
+      let fullQuestions = [];
+      const sectionStarts = [];
+
+      cfg.sections.forEach((sec, sIdx) => {
+        sectionStarts.push({
+          label: `${sec.part}: ${sec.name.split(' ')[0]} (${sec.count})`,
+          startIndex: fullQuestions.length
+        });
+        const secQs = buildQuestionListForSection(sec, sec.count, sIdx * 100);
+        fullQuestions = fullQuestions.concat(secQs);
+      });
+
+      launchExamSession({
+        category: cfg.id,
+        title: `${cfg.title} — સંપૂર્ણ પેપર (${cfg.totalQ} પ્રશ્નો)`,
+        partLabel: `કુલ ${cfg.totalQ} ગુણ • ${cfg.durationMinutes} મિનિટ`,
+        questions: fullQuestions,
+        durationSeconds: cfg.durationMinutes * 60,
+        sectionStarts
+      });
+    }
+
+    function startSectionExam(sectionId) {
+      const cfg = EXAM_CONFIGS[state.selectedCategory];
+      const sec = cfg.sections.find(s => s.id === sectionId);
+      if (!sec) return;
+
+      const secQs = buildQuestionListForSection(sec, sec.count, 0);
+      launchExamSession({
+        category: cfg.id,
+        title: `${sec.name} (${sec.count} પ્રશ્નો)`,
+        partLabel: `${cfg.title} • ${sec.part}`,
+        questions: secQs,
+        durationSeconds: sec.count * 60,
+        sectionStarts: []
+      });
+    }
+
+    function launchExamSession({ category, title, partLabel, questions, durationSeconds, sectionStarts }) {
+      if (state.activeExam.timerInterval) clearInterval(state.activeExam.timerInterval);
+
+      state.activeExam = {
+        category,
+        title,
+        partLabel,
+        questions,
+        answers: {},
+        currentIndex: 0,
+        timerSeconds: durationSeconds,
+        timerInterval: null,
+        showHint: false,
+        sectionStarts
+      };
+
+      document.getElementById('exam-title').textContent = title;
+      document.getElementById('exam-part-badge').textContent = partLabel;
+      document.getElementById('q-total-count').textContent = questions.length;
+      document.getElementById('omr-total-count').textContent = questions.length;
+      document.getElementById('mob-total-count').textContent = questions.length;
+
+      const jumpBar = document.getElementById('exam-section-jump-bar');
+      const jumpPills = document.getElementById('exam-section-pills');
+      if (sectionStarts && sectionStarts.length > 0) {
+        jumpBar.classList.remove('hidden');
+        jumpPills.innerHTML = sectionStarts.map(st => `
+          <button type="button" onclick="app.jumpToQuestion(${st.startIndex})" class="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-blue-100 text-slate-800 hover:text-blue-900 font-bold text-xs whitespace-nowrap border border-slate-200 transition">
+            Q.${st.startIndex + 1} • ${st.label}
+          </button>
+        `).join('');
+      } else {
+        jumpBar.classList.add('hidden');
+      }
+
+      renderOMRSheet();
+      renderCurrentQuestion();
+      startTimer();
+      navigate('exam');
+    }
+
+    function startTimer() {
+      updateTimerDisplay();
+      state.activeExam.timerInterval = setInterval(() => {
+        state.activeExam.timerSeconds--;
+        updateTimerDisplay();
+        if (state.activeExam.timerSeconds <= 0) {
+          clearInterval(state.activeExam.timerInterval);
+          showToast('સમય પૂર્ણ થયો! ટેસ્ટ આપમેળે સબમિટ થઈ રહ્યો છે.', 'info');
+          submitExam();
+        }
+      }, 1000);
+    }
+
+    function updateTimerDisplay() {
+      const sec = Math.max(0, state.activeExam.timerSeconds);
+      const h = String(Math.floor(sec / 3600)).padStart(2, '0');
+      const m = String(Math.floor((sec % 3600) / 60)).padStart(2, '0');
+      const s = String(sec % 60).padStart(2, '0');
+      document.getElementById('exam-timer').textContent = `${h}:${m}:${s}`;
+    }
+
+    function renderCurrentQuestion() {
+      const idx = state.activeExam.currentIndex;
+      const q = state.activeExam.questions[idx];
+
+      document.getElementById('q-current-index').textContent = idx + 1;
+      document.getElementById('mob-q-num').textContent = idx + 1;
+      document.getElementById('q-subject-tag').textContent = q.sectionName || q.subject;
+      document.getElementById('q-text').textContent = q.text;
+
+      const hintBox = document.getElementById('instant-hint-box');
+      if (state.activeExam.showHint) {
+        hintBox.classList.remove('hidden');
+        document.getElementById('instant-explanation-text').textContent = q.explanation;
+      } else {
+        hintBox.classList.add('hidden');
+      }
+
+      const selectedOpt = state.activeExam.answers[idx] || null;
+      const optionsContainer = document.getElementById('q-options-container');
+      optionsContainer.innerHTML = '';
+
+      const allOpts = [
+        { key: 'A', label: q.options.A },
+        { key: 'B', label: q.options.B },
+        { key: 'C', label: q.options.C },
+        { key: 'D', label: q.options.D },
+        { key: 'E', label: 'Not Attempted (પ્રશ્ન છોડવો છે — -0.25 નહીં કપાય)' }
+      ];
+
+      allOpts.forEach((opt) => {
+        const isSelected = selectedOpt === opt.key;
+        const isOptE = opt.key === 'E';
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.onclick = () => selectAnswer(idx, opt.key);
+        btn.className = `w-full text-left p-3.5 rounded-xl border-2 transition flex items-center gap-3.5 ${
+          isSelected
+            ? (isOptE ? 'border-slate-600 bg-slate-100' : 'border-policeBlue bg-blue-50/80 shadow-sm')
+            : 'border-slate-200 hover:border-blue-300 bg-white'
+        }`;
+        btn.innerHTML = `
+          <span class="w-8 h-8 rounded-full font-extrabold text-xs flex items-center justify-center shrink-0 transition ${
+            isSelected
+              ? 'bg-slate-900 text-white'
+              : (isOptE ? 'border-2 border-slate-500 text-slate-600' : 'border-2 border-red-600 text-red-600')
+          }">${opt.key}</span>
+          <span class="text-sm sm:text-base font-semibold ${isOptE ? 'text-slate-600 italic text-xs sm:text-sm' : 'text-slate-900'}">${opt.label}</span>
+        `;
+        optionsContainer.appendChild(btn);
+      });
+
+      document.getElementById('btn-prev-q').disabled = idx === 0;
+      const nextBtn = document.getElementById('btn-next-q');
+      if (idx === state.activeExam.questions.length - 1) {
+        nextBtn.innerHTML = 'સબમિટ કરો<i class="fa-solid fa-check ml-1.5"></i>';
+        nextBtn.onclick = () => openSubmitConfirmModal();
+      } else {
+        nextBtn.innerHTML = 'આગળનો પ્રશ્ન<i class="fa-solid fa-arrow-right ml-1.5"></i>';
+        nextBtn.onclick = () => nextQuestion();
+      }
+    }
+
+    function renderOMRSheet() {
+      const container = document.getElementById('omr-grid-rows');
+      container.innerHTML = '';
+
+      state.activeExam.questions.forEach((q, idx) => {
+        const chosen = state.activeExam.answers[idx] || null;
+        const isCurrent = idx === state.activeExam.currentIndex;
+
+        const row = document.createElement('div');
+        row.id = `omr-row-${idx}`;
+        row.className = `py-2 px-2.5 flex items-center justify-between rounded-lg transition ${isCurrent ? 'bg-amber-100/80' : 'hover:bg-red-50/60'}`;
+
+        const numBtn = document.createElement('button');
+        numBtn.type = 'button';
+        numBtn.onclick = () => jumpToQuestion(idx);
+        numBtn.className = `w-11 text-left font-extrabold text-xs sm:text-sm ${isCurrent ? 'text-blue-900 underline' : 'text-slate-800'}`;
+        numBtn.textContent = String(idx + 1).padStart(3, '0') + '.';
+
+        const bubblesWrap = document.createElement('div');
+        bubblesWrap.className = 'flex items-center gap-2 sm:gap-2.5';
+
+        ['A', 'B', 'C', 'D', 'E'].forEach((letter) => {
+          const b = document.createElement('span');
+          b.className = `omr-bubble ${letter === 'E' ? 'option-e' : ''} ${chosen === letter ? 'filled' : ''}`;
+          b.textContent = letter;
+          b.onclick = () => {
+            selectAnswer(idx, letter);
+            jumpToQuestion(idx);
+          };
+          bubblesWrap.appendChild(b);
+        });
+
+        row.appendChild(numBtn);
+        row.appendChild(bubblesWrap);
+        container.appendChild(row);
+      });
+
+      const filled = Object.keys(state.activeExam.answers).length;
+      document.getElementById('omr-filled-count').textContent = filled;
+      document.getElementById('mob-answered-count').textContent = filled;
+    }
+
+    function selectAnswer(qIdx, letter) {
+      state.activeExam.answers[qIdx] = letter;
+      renderCurrentQuestion();
+      renderOMRSheet();
+    }
+
+    function jumpToQuestion(idx) {
+      state.activeExam.currentIndex = idx;
+      state.activeExam.showHint = false;
+      renderCurrentQuestion();
+      renderOMRSheet();
+      const targetRow = document.getElementById(`omr-row-${idx}`);
+      if (targetRow) targetRow.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+      if (window.innerWidth < 1024) switchMobileExamTab('question');
+    }
+
+    function nextQuestion() {
+      if (state.activeExam.currentIndex < state.activeExam.questions.length - 1) {
+        jumpToQuestion(state.activeExam.currentIndex + 1);
+      }
+    }
+
+    function prevQuestion() {
+      if (state.activeExam.currentIndex > 0) {
+        jumpToQuestion(state.activeExam.currentIndex - 1);
+      }
+    }
+
+    function toggleInstantHint() {
+      state.activeExam.showHint = !state.activeExam.showHint;
+      renderCurrentQuestion();
+    }
+
+    function switchMobileExamTab(tab) {
+      const qPanel = document.getElementById('exam-question-panel');
+      const omrPanel = document.getElementById('exam-omr-panel');
+      const tabQ = document.getElementById('mobile-tab-q');
+      const tabOmr = document.getElementById('mobile-tab-omr');
+      if (tab === 'question') {
+        qPanel.classList.remove('hidden');
+        omrPanel.classList.add('hidden');
+        tabQ.className = 'py-2 rounded-lg text-xs font-extrabold bg-white text-slate-900 shadow-sm';
+        tabOmr.className = 'py-2 rounded-lg text-xs font-extrabold text-slate-600';
+      } else {
+        qPanel.classList.add('hidden');
+        omrPanel.classList.remove('hidden');
+        tabOmr.className = 'py-2 rounded-lg text-xs font-extrabold bg-white text-slate-900 shadow-sm';
+        tabQ.className = 'py-2 rounded-lg text-xs font-extrabold text-slate-600';
+      }
+    }
+
+    function openSubmitConfirmModal() {
+      const total = state.activeExam.questions.length;
+      let attemptedABCD = 0;
+      Object.values(state.activeExam.answers).forEach(ans => {
+        if (['A', 'B', 'C', 'D'].includes(ans)) attemptedABCD++;
+      });
+      document.getElementById('conf-total').textContent = total;
+      document.getElementById('conf-answered').textContent = attemptedABCD;
+      document.getElementById('conf-unanswered').textContent = total - attemptedABCD;
+      document.getElementById('modal-submit-confirm').classList.remove('hidden');
+    }
+
+    async function submitExam() {
+      closeModal('modal-submit-confirm');
+      if (state.activeExam.timerInterval) clearInterval(state.activeExam.timerInterval);
+
+      const qs = state.activeExam.questions;
+      let correct = 0, wrong = 0, skipped = 0;
+      let partATotal = 0, partAScore = 0, partBTotal = 0, partBScore = 0;
+      const sectionStats = {};
+
+      const detailedItems = qs.map((q, idx) => {
+        const userAns = state.activeExam.answers[idx] || 'E';
+        let status = 'SKIPPED', delta = 0;
+        if (userAns === 'E') {
+          skipped++;
+        } else if (userAns === q.correct) {
+          correct++;
+          status = 'CORRECT';
+          delta = 1;
+        } else {
+          wrong++;
+          status = 'WRONG';
+          delta = -0.25;
+        }
+
+        if (q.part === 'Part A') { partATotal += 1; partAScore += delta; }
+        else if (q.part === 'Part B') { partBTotal += 1; partBScore += delta; }
+
+        const sKey = q.sectionName || q.subject;
+        if (!sectionStats[sKey]) sectionStats[sKey] = { total: 0, score: 0 };
+        sectionStats[sKey].total += 1;
+        sectionStats[sKey].score += delta;
+
+        return { ...q, index: idx + 1, userAns, status, delta };
+      });
+
+      const netScore = Number((correct * 1 - wrong * 0.25).toFixed(2));
+      const maxScore = qs.length;
+      const accuracy = (correct + wrong) > 0 ? Math.round((correct / (correct + wrong)) * 100) : 0;
+
+      state.lastResult = {
+        category: state.activeExam.category,
+        examTitle: state.activeExam.title,
+        netScore, maxScore, correct, wrong, skipped, accuracy,
+        partATotal, partAScore: Number(partAScore.toFixed(2)),
+        partBTotal, partBScore: Number(partBScore.toFixed(2)),
+        sectionStats, items: detailedItems
+      };
+
+      renderResultView();
+      navigate('result');
+
+      const lbPayload = {
+        uid: state.userId,
+        category: state.activeExam.category,
+        userName: state.userName,
+        examTitle: state.activeExam.title,
+        netScore, maxScore, correct, wrong, accuracy,
+        createdAt: Date.now()
+      };
+
+      saveLocalLeaderboardEntry(lbPayload);
+
+      if (db) {
+        try {
+          await addDoc(collection(db, 'leaderboard'), lbPayload);
+          showToast('તમારો સ્કોર Cloud Leaderboard પર Sync થઈ ગયો છે!', 'success');
+        } catch (err) {
+          console.warn('Leaderboard cloud write fallback:', err.message);
+          showToast('સ્કોર Local Leaderboard માં સેવ થયો છે.', 'info');
+        }
+      }
+    }
+
+    function renderResultView() {
+      const r = state.lastResult;
+      document.getElementById('res-exam-title').textContent = r.examTitle;
+      document.getElementById('res-user-info').textContent = `વિદ્યાર્થી: ${state.userName}`;
+      document.getElementById('res-net-score').textContent = r.netScore.toFixed(2);
+      document.getElementById('res-max-score').textContent = `કુલ ${r.maxScore} ગુણમાંથી`;
+      document.getElementById('res-correct-count').textContent = r.correct;
+      document.getElementById('res-accuracy').textContent = `ચોકસાઈ: ${r.accuracy}%`;
+      document.getElementById('res-wrong-count').textContent = r.wrong;
+      document.getElementById('res-negative-marks').textContent = `કપાયેલ ગુણ: -${(r.wrong * 0.25).toFixed(2)}`;
+      document.getElementById('res-skipped-count').textContent = r.skipped;
+
+      const partsDiv = document.getElementById('res-parts-breakdown');
+      partsDiv.innerHTML = '';
+
+      if (r.category === 'CONSTABLE' && r.partATotal > 0 && r.partBTotal > 0) {
+        [
+          { label: 'Part A (રીઝનિંગ, ગણિત, ગુજરાતી)', score: r.partAScore, total: r.partATotal },
+          { label: 'Part B (બંધારણ, GK-વિજ્ઞાન, ઇતિહાસ-ભૂગોળ)', score: r.partBScore, total: r.partBTotal }
+        ].forEach(p => {
+          const req40 = Number((p.total * 0.4).toFixed(2));
+          const passed = p.score >= req40;
+          const box = document.createElement('div');
+          box.className = `p-4 rounded-xl border ${passed ? 'bg-emerald-50/70 border-emerald-200' : 'bg-amber-50/70 border-amber-200'} flex items-center justify-between`;
+          box.innerHTML = `
+            <div>
+              <p class="text-xs font-extrabold text-slate-700">${p.label}</p>
+              <p class="text-lg font-extrabold text-slate-900 mt-0.5">${p.score} / ${p.total} ગુણ</p>
+              <p class="text-[11px] text-slate-600">40% ક્વોલિફાઇંગ જરૂરી: ${req40} ગુણ</p>
+            </div>
+            <span class="px-3 py-1 rounded-full text-xs font-extrabold ${passed ? 'bg-emerald-600 text-white' : 'bg-rose-600 text-white'}">
+              ${passed ? '40% PASS ✓' : '40% થી ઓછા ✗'}
+            </span>
+          `;
+          partsDiv.appendChild(box);
+        });
+      } else {
+        Object.entries(r.sectionStats).forEach(([secName, st]) => {
+          const box = document.createElement('div');
+          box.className = 'p-4 rounded-xl border bg-white border-slate-200 flex items-center justify-between';
+          box.innerHTML = `
+            <div>
+              <p class="text-xs font-extrabold text-slate-700">${secName}</p>
+              <p class="text-base font-extrabold text-policeBlue mt-0.5">${Number(st.score.toFixed(2))} / ${st.total} ગુણ</p>
+            </div>
+            <span class="px-2.5 py-1 rounded-lg bg-blue-50 text-blue-900 font-bold text-xs">${st.total} પ્રશ્નો</span>
+          `;
+          partsDiv.appendChild(box);
+        });
+      }
+
+      filterReview('ALL');
+    }
+
+    function filterReview(filterType) {
+      const container = document.getElementById('res-solutions-list');
+      container.innerHTML = '';
+      const filtered = state.lastResult.items.filter(item => filterType === 'ALL' ? true : item.status === filterType);
+
+      if (filtered.length === 0) {
+        container.innerHTML = `<div class="bg-white p-6 rounded-2xl text-center text-slate-500 text-sm">આ ફિલ્ટરમાં કોઈ પ્રશ્ન નથી.</div>`;
+        return;
+      }
+
+      filtered.slice(0, 100).forEach(item => {
+        const statusBadge = item.status === 'CORRECT'
+          ? '<span class="px-2.5 py-1 rounded-lg bg-emerald-100 text-emerald-800 font-extrabold text-xs">સાચો (+1)</span>'
+          : item.status === 'WRONG'
+            ? '<span class="px-2.5 py-1 rounded-lg bg-rose-100 text-rose-800 font-extrabold text-xs">ખોટો (-0.25)</span>'
+            : '<span class="px-2.5 py-1 rounded-lg bg-slate-200 text-slate-800 font-extrabold text-xs">છોડેલ / (E) (0)</span>';
+
+        const card = document.createElement('div');
+        card.className = 'bg-white rounded-2xl p-5 shadow-sm border border-slate-200 space-y-3.5';
+        card.innerHTML = `
+          <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 pb-3">
+            <span class="font-extrabold text-sm text-policeBlue">પ્રશ્ન ${item.index} (${item.sectionName || item.part})</span>
+            <div class="flex items-center gap-2">
+              <span class="text-xs font-bold text-slate-600">તમારો જવાબ: <strong>(${item.userAns})</strong></span>
+              <span class="text-xs font-bold text-emerald-700">સાચો: <strong>(${item.correct})</strong></span>
+              ${statusBadge}
+            </div>
+          </div>
+          <p class="font-bold text-slate-900 text-sm sm:text-base leading-relaxed whitespace-pre-line">${item.text}</p>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs sm:text-sm">
+            ${['A', 'B', 'C', 'D'].map(k => `
+              <div class="px-3 py-2 rounded-lg border ${
+                k === item.correct
+                  ? 'bg-emerald-50 border-emerald-400 font-bold text-emerald-950'
+                  : (k === item.userAns ? 'bg-rose-50 border-rose-400 text-rose-900' : 'bg-slate-50 border-slate-200 text-slate-700')
+              }">
+                <strong>(${k})</strong> ${item.options[k]}
+              </div>
+            `).join('')}
+          </div>
+          <div class="bg-amber-50/90 border border-amber-200 rounded-xl p-4 space-y-1.5">
+            <p class="text-xs font-extrabold text-amber-900 flex items-center gap-1.5">
+              <i class="fa-solid fa-graduation-cap text-amber-600"></i> ઊંડી સ્ટેપ-બાય-સ્ટેપ સમજૂતી:
+            </p>
+            <p class="text-xs sm:text-sm text-slate-800 leading-relaxed whitespace-pre-line">${item.explanation}</p>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    function setLeaderboardFilter(cat) {
+      state.leaderboardFilter = cat;
+      ['all', 'const', 'talati'].forEach(k => {
+        const btn = document.getElementById(`lb-tab-${k}`);
+        if (btn) btn.className = 'px-3 py-2 rounded-xl bg-slate-800 text-white font-bold text-xs';
+      });
+      const activeKey = cat === 'ALL' ? 'all' : (cat === 'CONSTABLE' ? 'const' : 'talati');
+      const activeBtn = document.getElementById(`lb-tab-${activeKey}`);
+      if (activeBtn) activeBtn.className = 'px-3 py-2 rounded-xl bg-amber-500 text-slate-950 font-extrabold text-xs';
+      renderLeaderboard();
+    }
+
+    function renderLeaderboard() {
+      const tbody = document.getElementById('leaderboard-tbody');
+      const list = state.leaderboard.filter(row => state.leaderboardFilter === 'ALL' ? true : (row.category || 'CONSTABLE') === state.leaderboardFilter);
+
+      if (list.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="5" class="py-8 text-center text-slate-500 text-sm">હજુ સુધી કોઈ સ્કોર નોંધાયો નથી. પ્રથમ ટેસ્ટ આપીને ટોપ રેન્ક મેળવો!</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = list.slice(0, 30).map((row, i) => {
+        const rankBadge = i === 0
+          ? '<span class="px-2.5 py-1 rounded-full bg-amber-400 text-slate-950 font-extrabold text-xs">🥇 #1</span>'
+          : i === 1
+            ? '<span class="px-2.5 py-1 rounded-full bg-slate-300 text-slate-900 font-extrabold text-xs">🥈 #2</span>'
+            : i === 2
+              ? '<span class="px-2.5 py-1 rounded-full bg-amber-700 text-white font-extrabold text-xs">🥉 #3</span>'
+              : `<span class="font-bold text-slate-600 text-xs">#${i + 1}</span>`;
+
+        const dateStr = row.createdAt ? new Date(row.createdAt).toLocaleDateString('gu-IN') : '';
+        const accText = typeof row.accuracy === 'number' ? `${row.accuracy}% • ` : '';
+
+        return `
+          <tr class="hover:bg-slate-50">
+            <td class="py-3.5 px-4">${rankBadge}</td>
+            <td class="py-3.5 px-4 text-slate-900 font-bold">${row.userName || 'વિદ્યાર્થી'}</td>
+            <td class="py-3.5 px-4 text-xs text-slate-600">${row.examTitle || 'મોક ટેસ્ટ'}</td>
+            <td class="py-3.5 px-4 text-center text-xs">
+              ${accText}<span class="text-emerald-700 font-bold">${row.correct}</span> / <span class="text-rose-600 font-bold">${row.wrong}</span>
+            </td>
+            <td class="py-3.5 px-4 text-right">
+              <div class="font-extrabold text-policeBlue">${Number(row.netScore).toFixed(2)} / ${row.maxScore}</div>
+              <div class="text-[11px] text-slate-400">${dateStr}</div>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    async function persistQuestionItem(newQ) {
+      const itemWithId = { ...newQ, id: 'q_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6) };
+
+      const prevLocal = JSON.parse(localStorage.getItem(LOCAL_Q_KEY) || '[]');
+      prevLocal.push(itemWithId);
+      saveLocalQuestionsOnly(prevLocal);
+
+      state.questions = mergeQuestions([...state.questions, itemWithId]);
+      renderDashboard();
+
+      if (db) {
+        try {
+          await addDoc(collection(db, 'questions'), newQ);
+        } catch (err) {
+          console.warn('Firestore question write fallback:', err.message);
+        }
+      }
+    }
+
+    async function generateDateCurrentAffairs() {
+      const dateVal = document.getElementById('auto-ca-date').value;
+      const caItems = buildDateCurrentAffairsQuestions(dateVal);
+
+      for (const item of caItems) {
+        await persistQuestionItem({
+          ...item,
+          addedBy: state.userName,
+          autoDate: dateVal || new Date().toISOString().slice(0, 10),
+          createdAt: Date.now()
+        });
+      }
+
+      closeModal('modal-add-question');
+      showToast(`${caItems.length} નવા Auto Current Affairs પ્રશ્નો ઉમેરાયા!`, 'success');
+    }
+
+    async function generateBulkSubjectQuestions() {
+      const subject = document.getElementById('new-q-subject').value;
+      const count = parseInt(document.getElementById('auto-bulk-count').value, 10) || 10;
+      const baseOffset = state.questions.length;
+
+      for (let i = 0; i < count; i++) {
+        const gen = generateParametricQuestion(subject, baseOffset + i);
+        await persistQuestionItem({
+          subject: gen.subject,
+          text: gen.text,
+          options: gen.options,
+          correct: gen.correct,
+          explanation: gen.explanation,
+          addedBy: state.userName + ' (Auto Bulk)',
+          createdAt: Date.now() + i
+        });
+      }
+
+      closeModal('modal-add-question');
+      showToast(`${count} નવા પ્રશ્નો Auto ઉમેરાઈ ગયા!`, 'success');
+    }
+
+    async function handleSaveNewQuestion(e) {
+      e.preventDefault();
+      const newQ = {
+        subject: document.getElementById('new-q-subject').value,
+        text: document.getElementById('new-q-text').value.trim(),
+        options: {
+          A: document.getElementById('new-q-optA').value.trim(),
+          B: document.getElementById('new-q-optB').value.trim(),
+          C: document.getElementById('new-q-optC').value.trim(),
+          D: document.getElementById('new-q-optD').value.trim(),
+        },
+        correct: document.getElementById('new-q-correct').value,
+        explanation: document.getElementById('new-q-explanation').value.trim(),
+        addedBy: state.userName,
+        createdAt: Date.now()
+      };
+
+      await persistQuestionItem(newQ);
+      document.getElementById('form-add-question').reset();
+      closeModal('modal-add-question');
+      showToast('નવો પ્રશ્ન સફળતાપૂર્વક સેવ અને Sync થઈ ગયો!', 'success');
+    }
+
+    async function saveProfileName(e) {
+      e.preventDefault();
+      const name = document.getElementById('input-profile-name').value.trim();
+      if (!name) return;
+      updateUserNameUI(name);
+      localStorage.setItem(LOCAL_PROFILE_KEY, name);
+      closeModal('modal-profile');
+      showToast('તમારું નામ સેવ થઈ ગયું છે!', 'success');
+
+      if (db) {
+        try {
+          await setDoc(doc(db, 'user_profiles', state.userId), { name, updatedAt: Date.now() }, { merge: true });
+        } catch (err) {
+          console.warn('Profile cloud save warning:', err.message);
+        }
+      }
+    }
+
+    function navigate(viewName) {
+      ['dashboard', 'exam', 'result', 'leaderboard'].forEach(v => {
+        document.getElementById(`view-${v}`).classList.add('hidden');
+      });
+      document.getElementById(`view-${viewName}`).classList.remove('hidden');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function openAddQuestionModal() {
+      const dateInput = document.getElementById('auto-ca-date');
+      if (dateInput && !dateInput.value) {
+        dateInput.value = new Date().toISOString().slice(0, 10);
+      }
+      document.getElementById('modal-add-question').classList.remove('hidden');
+    }
+
+    function openProfileModal() {
+      document.getElementById('modal-profile').classList.remove('hidden');
+    }
+
+    function closeModal(id) {
+      document.getElementById(id).classList.add('hidden');
+    }
+
+    window.app = {
+      navigate,
+      switchExamCategory,
+      startFullExam,
+      startSectionExam,
+      nextQuestion,
+      prevQuestion,
+      jumpToQuestion,
+      toggleInstantHint,
+      switchMobileExamTab,
+      openSubmitConfirmModal,
+      submitExam,
+      filterReview,
+      setLeaderboardFilter,
+      openAddQuestionModal,
+      openProfileModal,
+      closeModal,
+      generateDateCurrentAffairs,
+      generateBulkSubjectQuestions,
+      handleSaveNewQuestion,
+      saveProfileName,
+      manualSync
+    };
+
+    // Boot App
+    state.userId = getOrCreateLocalUserId();
+    document.getElementById('display-user-uid').textContent = state.userId;
+    document.getElementById('modal-user-uid').textContent = state.userId;
+    loadLocalData();
+    renderDashboard();
+    renderLeaderboard();
+    initFirebaseSync(false);
+  </script>
+</body>
+</html>
